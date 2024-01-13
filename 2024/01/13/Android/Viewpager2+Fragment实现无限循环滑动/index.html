@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="keywords" content="hexo,个人博客,blog" />
+  <meta name="description" content="某某的个人博客" />
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="dns-prefetch" href="https://busuanzi.ibruce.info">
+  <link rel="dns-prefetch" href="https://at.alicdn.com">
+  
+  <link rel="dns-prefetch" href="https://widget.daovoice.io">
+  <link rel="dns-prefetch" href="https://widget-static-cdn.daovoice.io">
+  <link rel="dns-prefetch" href="https://im.daovoice.io">
+  
+  
+  <link rel="dns-prefetch" href="https://hm.baidu.com/">
+  
+  
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://api.github.com">
+  <link rel="dns-prefetch" href="https://avatars3.githubusercontent.com">
+  
+  <link rel="stylesheet" type="text/css" href="/./style/main.css">
+	<link rel="shortcut icon" href="/favicon.ico" title="Favicon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+	<title>Darren Yuen</title>
+  
+  <script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?awwssw1snsnsnn1ndndnndnd99j";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();
+  </script>
+  
+  
+    <script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/123456.js","daovoice");daovoice('init',{app_id: "123456"});daovoice('update');
+  </script>
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+<body>
+  <canvas id="pattern-placeholder" height="230"></canvas>
+<div class="navbar-header">
+  <a class="blog-title" href="/">Darren Yuen</a>
+  <a class="face-img" href="/">
+    <img src="https://tva3.sinaimg.cn/crop.0.0.200.200.180/005Kc3C1jw8f2uep0hhkvj305k05k3yk.jpg">
+  </a>
+</div>
+<main>
+  <div class="article-title">
+    
+
+    <ul class="article-info">
+      <li>
+        发布
+        <time datetime="2024-01-13T14:27:00.184Z" itemprop="datePublished">2024-01-13</time>
+      </li>
+      <li>
+        
+    更新 <time datetime="2024-01-13T14:27:22.975Z" itemprop="dateUpdated">2024-01-13</time>
+
+      </li>
+      <li id="busuanzi_container_page_pv">
+        阅读 <span id="busuanzi_value_page_pv"></span>
+      </li>
+    </ul>
+  </div>
+  <div class="container">
+    <div class="article">
+      <div class="content">
+        
+        <blockquote>
+<p>在一次需求中需要实现播放卡片无限滚动的效果，现有代码使用的是Viewpager2+Fragment的框架，但官方的Viewpager2并没有提供无限滑动的API，所以这里摸索了一套方案记录如下。</p>
+</blockquote>
+<p>在动手coding之前在网上调研了相关效果的实现方案，大致有两种思路：一种是在<code>FragmentStateAdapter#getItemCount()</code>中返回<code>Integer.MAX_VALUE</code>通过不断填充内容使得滑不动尽头达到无限滑动的效果；另一种则是在列表前后各加一个元素，再配合自动切换实现无限滑动。需求实现中采用的是第二种思路。</p>
+<h3 id="改造数据源"><a href="#改造数据源" class="headerlink" title="改造数据源"></a>改造数据源</h3><p>前后各加一个元素的具体实现，是在构造Adapter数据的时候分别将数据列表的最后一个元素和第一个元素拷贝添加至数据列表的头部和尾部。即数据列表的内容由[A, B, C] 变为 [C<code>, A, B, C, A</code>]。</p>
+<h3 id="Viewpager2自动切换"><a href="#Viewpager2自动切换" class="headerlink" title="Viewpager2自动切换"></a>Viewpager2自动切换</h3><p>注册Viewpager2页面状态改变的监听器，在回调中判断如果当前处于第一张卡片（即C&#96;处）则自动切换到倒数第二张卡片（即C处），如果当前当前处于最后一张卡片则自动切换到第二张，通过这样一种方式可以让用户无限滑动卡片。</p>
+<p>相关核心代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">// 改造数据源，原数据为[RED, YELLOW, BLUE]</span><br><span class="line">dataList = arrayListOf&lt;Int&gt;(Color.BLUE, Color.RED, Color.YELLOW, Color.BLUE, Color.RED)</span><br><span class="line"></span><br><span class="line">// 在viewpager2的页面状态监听器中实现自动切换</span><br><span class="line">viewPager2?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() &#123;</span><br><span class="line">    override fun onPageScrolled(</span><br><span class="line">        position: Int,</span><br><span class="line">        positionOffset: Float,</span><br><span class="line">        positionOffsetPixels: Int</span><br><span class="line">    ) &#123;</span><br><span class="line">        super.onPageScrolled(position, positionOffset, positionOffsetPixels)</span><br><span class="line">        </span><br><span class="line">        if (positionOffset != 0f) return</span><br><span class="line">        </span><br><span class="line">        // itemCount &gt; 1要支持循环滑动</span><br><span class="line">        if (itemCount &gt; 1) &#123;</span><br><span class="line">            if (position == 0) &#123;</span><br><span class="line">                viewPager?.setCurrentItem(itemCount - 2, false)</span><br><span class="line">            &#125; else if (position == itemCount - 1) &#123;</span><br><span class="line">                viewPager?.setCurrentItem(1, false)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>该示例代码在Demo中运行是能达到预期效果的，但是当在主工程上实现时发现[A, B, C] to [C<code>, A, B, C, A</code>]这个对数据源的改造出现了水土不服，原因是Adapter中有一个通过songID获取当前索引的方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fun findPosition(songId: String): Int &#123;</span><br><span class="line">    return dataList.indexOfFirst &#123; it.songId == songId &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以存在一个问题，即在 [C<code>, A, B, C, A</code>]中，当想获取C的位置时返回的却是C&#96;的索引。这个方法在原有代码中被多处调用，改造这个方法也存在一定风险，本着不动现有逻辑的原则，唯有探索其他方法了。</p>
+<p>之所以这一种方案会出现水土不服，是因为改造数据源时对数据元素进行了深拷贝，导致执行<code>findPostion</code>可能出错。能不能避开通过深拷贝的方式来适配当前的<code>findPosition</code>逻辑呢？答案是肯定的。</p>
+<h3 id="优化后的数据源"><a href="#优化后的数据源" class="headerlink" title="优化后的数据源"></a>优化后的数据源</h3><p>既然通过深拷贝元素对象不可行，那干脆不进行对象的拷贝了。在数据列表前后各加一个元素这个方案优化后的数据源实现方式是在数据列表前后各加一个元素类型的空对象，即只创建元素对象，不对其进行使用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if (list.size &gt; 1) &#123;</span><br><span class="line">    // 构造循环列表 [A, B, C] to [obj, A, B, C, obj]</span><br><span class="line">    dataList.add(PlaySongInfo())</span><br><span class="line">    dataList.addAll(list)</span><br><span class="line">    dataList.add(PlaySongInfo())</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    dataList.addAll(list)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于改造后的数据源有前后各有一个仅作填充使用的对象，所以在使用列表数据的时候需要做一下index的转换，以下是使用数据源创建fragment的示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">override fun createFragment(position: Int): Fragment &#123;</span><br><span class="line">    val dataSize = dataList.size</span><br><span class="line">    // 卡片大于1时支持循环滑动</span><br><span class="line">    val realPosition = if (dataSize &gt; 1) &#123;</span><br><span class="line">        if (position == 0) &#123;</span><br><span class="line">            dataSize - 2</span><br><span class="line">        &#125; else if (position == dataSize - 1) &#123;</span><br><span class="line">            1</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            position</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        position</span><br><span class="line">    &#125;</span><br><span class="line">      val songInfo = dataList[realPosition]</span><br><span class="line">      return TargetFragment.newInstance(songInfo)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，优化后的数据源再配合上Viewpager2状态监听器中的自动切换逻辑，播放卡片无限滑动的效果就实现了。</p>
+
+      </div>
+        <div class="support-author">
+          <p>感谢您的阅读。 🙏
+          <a href="https://888.com/index.html" target="_blank">关于转载请看这里</a>
+            <!--<a class="btn-pay"  href="#pay-modal">¥ 打赏支持</a>-->
+          </p>
+        </div>
+        <!--
+            <div class="like ">
+              <div class="like-button">
+                <a id="like-note" href="">
+                  <i class="icon-heart"></i>喜欢
+                </a>
+              </div>
+              <span id="likes-count">256</span>
+            </div>
+        -->
+        <div class="otherLink">
+          <div class="previous">
+          </div>
+          <div class="next">
+          </div>
+        </div>
+        <div class="comments" id="comments">
+          
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+  const gitalk = new Gitalk({
+    clientID: '8888a8888',
+    clientSecret: '8888886666666',
+    repo: 'xxxx.github.io',
+    owner: 'admin',
+    admin: ['admin'],
+    id: location.pathname,      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false
+  })
+
+  gitalk.render('comments');
+</script>
+
+
+        </div>
+      </div>
+    </div>
+   </div>
+</main>
+<div class="footer">
+  <div class="info">
+    <p>
+    <a target="_blank" rel="noopener" href="https://hexo.io"> Hexo </a> 强力驱动 |
+      <a target="_blank" rel="noopener" href="https://github.com/Youthink/hexo-themes-yearn"> Yearn </a>
+      主题
+    </p>
+    <p>&copy;2013-2018 某某的博客 京ICP备xxxxxx号</p>
+  </div>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<script>//console
+  var consoleConfig = '\n欢迎访问 https://hufangyun.com ，围观小猿大圣的博客(づ｡◕‿‿◕｡)づ！\n,\n本博客使用 %cHexo%c 搭建，博客主题为小猿大圣开发的 %chexo-themes-yearn%c ~~~ 🎉🎉🎉 \n\n源码 https://github.com/Youthink/hexo-themes-yearn \n\n如果喜欢可以 star 支持一下 ❤️~\n,\n扫描下面的二维码，在手机上查看博客！\n,https://static.hufangyun.com/blog-url-qrcode-180-180.png,\n 想知道这个效果如何实现的？博客内搜索 console 彩蛋 🚀 ！\n'.split(',');
+  var canConsole = true;
+  var consoleInfo = (function(consoleConfig) {
+  if (!canConsole || !consoleConfig || consoleConfig.length < 1) {
+    return;
+  }
+  var consoleColor = '#6190e8';
+  var _console;
+  var backgroundTextStyle = 'padding: 1px 5px;color: #fff;background: ' + consoleColor + ';'
+  var textStyle = 'color: ' + consoleColor + ';';
+
+  consoleConfig.map(o => {
+    var num = (o.match(/%c/g) || []).length;
+    if(/^http(s)?:\/\//.test(o)) {
+      console.log('%c     ', 'background: url(' + o + ') no-repeat left center;font-size: 180px;');
+      return;
+    }
+    if (num > 0) {
+      var logArguments = [];
+      for (var i = 0; i < num; i++) {
+        if (i % 2 === 0) {
+          logArguments.push(backgroundTextStyle);
+        } else {
+          logArguments.push(textStyle);
+        }
+      }
+      (_console = console).log.apply(_console, ['%c' + o, textStyle].concat(logArguments));
+      return;
+    }
+    console.log('%c' + o, textStyle);
+  });
+}(consoleConfig));</script><script type="text/javascript" src="/./js/main.js"></script>
+
+  <script src="//at.alicdn.com/t/font_159214_mvtxvg9me9.js"></script>
+</body>
+</html>
