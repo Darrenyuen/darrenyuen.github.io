@@ -145,7 +145,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/02/07/%E6%9E%81%E5%AE%A2/IDE%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/02/07/%E6%9E%81%E5%AE%A2/IDEA%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -159,7 +159,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2024/02/07/%E6%9E%81%E5%AE%A2/IDE%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">IDE平台的插件开发实战</a>
+            <a href="/2024/02/07/%E6%9E%81%E5%AE%A2/IDEA%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">IDE平台的插件开发实战</a>
         </h2>
 
         <div class="post-meta">
@@ -168,10 +168,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-02-07 00:00:00 / Modified: 23:56:36" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
+              <time title="Created: 2024-02-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-07T00:00:00+08:00">2024-02-07</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-02-08 00:19:23" itemprop="dateModified" datetime="2024-02-08T00:19:23+08:00">2024-02-08</time>
+              </span>
 
           
 
@@ -194,8 +200,11 @@
 </ol>
 <p><img src="/source/images/newideapluginproject.png"></p>
 <h3 id="开发插件"><a href="#开发插件" class="headerlink" title="开发插件"></a>开发插件</h3><ol>
-<li><strong>运行模板代码</strong><br>把官方模板仓库中的代码克隆下来，使用IDEA打开，无需额外设置其他配置，只需要等sync完成后选择<code>run plugin</code>的gradle选项即可运行。模板代码中预设的插件名是MyToolWindow，运行效果如图：<br><img src="/ideaplugindemorun.png"></li>
-<li><strong>绘制控件</strong><br> 本意是做一个定时提醒插件，分析需求后，只需要以下几个交互控件：</li>
+<li><p><strong>运行模板代码</strong><br>把官方模板仓库中的代码克隆下来，使用IDEA打开，无需额外设置其他配置，只需要等sync完成后选择<code>run plugin</code>的gradle选项即可运行。模板代码中预设的插件名是MyToolWindow，运行效果如图：</p>
+<p><img src="https://github.com/Darrenyuen/darrenyuen.github.io/blob/master/images/ideaplugindemorun.png"></p>
+</li>
+<li><p><strong>绘制控件</strong><br> 本意是做一个定时提醒插件，分析需求后，只需要以下几个交互控件：</p>
+</li>
 </ol>
 <ul>
 <li>设置提醒时间间隔</li>
@@ -415,7 +424,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-01-24 19:55:03" itemprop="dateModified" datetime="2024-01-24T19:55:03+08:00">2024-01-24</time>
+                <time title="Modified: 2024-02-08 21:07:25" itemprop="dateModified" datetime="2024-02-08T21:07:25+08:00">2024-02-08</time>
               </span>
 
           
@@ -448,20 +457,38 @@
 <li><p><strong>提高可扩展性</strong>：模块化可以将应用程序拆分成多个独立的模块，每个模块都可以单独扩展或与其他模块组合扩展。这样可以提高应用程序的可扩展性，使其更容易适应不同的需求和场景。</p>
 </li>
 </ul>
-<h2 id="模块化实践方案"><a href="#模块化实践方案" class="headerlink" title="模块化实践方案"></a>模块化实践方案</h2><p>模块化中的重要课题是：</p>
+<h2 id="模块化实践方案"><a href="#模块化实践方案" class="headerlink" title="模块化实践方案"></a>模块化实践方案</h2><p><strong>模块化中的重要课题是：</strong></p>
 <ol>
-<li>主模块与子模块解耦合，在安卓工程上的表现是主模块要依赖子模块来使用子模块中的能力，因此主模块可以依赖子模块，但子模块不能依赖主模块，否则就是非法环路依赖了。</li>
-<li>主模块与子模块通信，解耦合带来的问题是在子模块中不能与主模块进行通信，因此在需要使用主模块的一些功能时需要解决模块间的通信问题。</li>
+<li>主模块与子模块解耦合，在安卓工程上的表现是主模块要依赖子模块来使用子模块中的能力，因此主模块可以依赖子模块，但子模块不能依赖主模块，否则就是非法环形依赖了。</li>
+<li>子模块与主模块通信，解耦合带来的问题是在子模块中不能依赖主模块，也就不能直接使用主模块中的能力了，因此需要解决特定情况下子模块使用主模块能力的问题。</li>
 </ol>
 <p>本文介绍两种常见常用的模块化方案。</p>
-<h3 id="显式依赖（SPI）"><a href="#显式依赖（SPI）" class="headerlink" title="显式依赖（SPI）"></a>显式依赖（SPI）</h3><p>SPI（service provider interface），通过使用Java提供的ServiceLoader接口，在工程结构的resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，文件内是实现类的包路径，从而在运行时动态通过该服务接口名字查找到实现类的名字，并装载实例化，完成模块的注入。</p>
+<p><em>以下示例都假设有主模块（app）、接口模块(api)和子模块（impl）三种模块角色</em></p>
+<h3 id="隐式依赖（SPI）"><a href="#隐式依赖（SPI）" class="headerlink" title="隐式依赖（SPI）"></a>隐式依赖（SPI）</h3><p>SPI（service provider interface），通过使用Java提供的ServiceLoader接口，在工程结构的module&#x2F;resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，文件内是实现类的包路径，从而在运行时动态通过该服务接口名字查找到实现类的名字，并装载实例化，完成模块的注入。</p>
+<p>逻辑关系如图所示：<br>![[Pasted image 20240208202752.png]]</p>
+<p>具体实现：</p>
 <ol>
 <li>在接口模块中声明接口<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">package com.example.spi.api  </span><br><span class="line">  </span><br><span class="line">interface ILogInterface &#123;  </span><br><span class="line">    fun logD(msg: String)  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 <li>在实际业务模块中实现接口<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package com.example.spi.impl  </span><br><span class="line">  </span><br><span class="line">import android.util.Log  </span><br><span class="line">import com.example.spi.api.ILogInterface  </span><br><span class="line">  </span><br><span class="line">class Logger: ILogInterface &#123;  </span><br><span class="line">    companion object &#123;  </span><br><span class="line">        private const val TAG = &quot;Logger&quot;  </span><br><span class="line">    &#125;  </span><br><span class="line">    override fun logD(msg: String) &#123;  </span><br><span class="line">        Log.d(TAG, msg)  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>在同模块中的resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，接口同名文件内部是实现类的包路径<br>![[Pasted image 20240115232112.png]]</li>
-<li>通过ServiceLoader使用实际业务模块中的能力<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServiceLoader.load(ILogInterface::class.java, classLoader).iterator().next()?.logD(&quot;test&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>在接口模块中的resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，接口同名文件内部是实现类的包路径<br>![[Pasted image 20240115232112.png]]</li>
+<li>在主模块中通过ServiceLoader与接口模块中的接口使用实际业务模块中的能力<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServiceLoader.load(ILogInterface::class.java, classLoader).iterator().next()?.logD(&quot;test&quot;)</span><br></pre></td></tr></table></figure></li>
 </ol>
-<h3 id="隐式依赖"><a href="#隐式依赖" class="headerlink" title="隐式依赖"></a>隐式依赖</h3><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>
+<h3 id="显式依赖"><a href="#显式依赖" class="headerlink" title="显式依赖"></a>显式依赖</h3><p>显示依赖也是借助运行时反射来达到依赖的，但这交由开发者来手动实现，并非同spi方式只需在接口模块编写配置文件即可。</p>
+<p>逻辑关系如图所示：<br>![[Pasted image 20240208203730.png]]</p>
+<p>具体实现：</p>
+<ol>
+<li><p>同样地在接口模块中声明接口，主模块与子模块不直接通信，而是通过接口模块这个桥梁实现通信</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 子模块通过接口模块提供给主模块的能力，由子模块实现</span><br><span class="line">interface IService &#123;  </span><br><span class="line">	fun getSubActivity(): Activity </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 主模块通过接口模块提供给子模块的能力，由主模块实现</span><br><span class="line">interface IContext &#123;  </span><br><span class="line">	val util: IUtil   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在子模块中实现接口，并提供接口接受主模块注入的能力</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 子模块实现接口  </span><br><span class="line">@Keep  </span><br><span class="line">class ServiceImpl(context: IContext): IService &#123;  </span><br><span class="line">  </span><br><span class="line">	init &#123;  </span><br><span class="line">		HostContextForService.init(context)  // 接受主模块注入的能力，后续通过访问HostContextForService即可使用主模块的能力</span><br><span class="line">	&#125;  </span><br><span class="line"></span><br><span class="line">	// 向外暴露子模块的能力</span><br><span class="line">	override </span><br><span class="line">	fun getSubActivity(): Activity &#123;</span><br><span class="line">		return SubActivity()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>主模块通过接口模块使用子模块的能力，并注入主模块的能力</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// 实现接口，向子模块提供能力</span><br><span class="line">class ContextImpl: IContext &#123;  </span><br><span class="line">	override val util: IUtil    </span><br><span class="line">	get() = Util()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 使用子模块的能力</span><br><span class="line">fun initService() &#123;  </span><br><span class="line">	runCatching &#123;  </span><br><span class="line">		if (ServiceManager.getService(IService::class.java) == null) &#123;  </span><br><span class="line">			val subModuleHost = ContextImpl()  // 向子模块提供能力</span><br><span class="line">			// 运行时构造子模块中的实例，并注入主模块的能力</span><br><span class="line">			val serviceImplClass = Class.forName(&quot;com.example.impl.service.ServiceImpl&quot;)  </span><br><span class="line">			val constructor = serviceImplClass.getConstructor(IContext::class.java)  </span><br><span class="line">			val serviceImpl = constructor.newInstance(subModuleHost) as IService  </span><br><span class="line">			ServiceManager.registerIfNull(IService::class.java, serviceImpl) </span><br><span class="line">			// 后续通过 ServiceManager获取子模块的实例并使用子模块</span><br><span class="line">			&#125;  </span><br><span class="line">	&#125;.onFailure &#123;  </span><br><span class="line">		Log.e(&quot;ServiceRegistry&quot;, &quot;init template show service error.&quot;, it)  </span><br><span class="line">	&#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>至此，便实现了主模块与子模块间的通信，并且可以在子模块中不用依赖主模块也能使用主模块中的能力了。</p>
+<p>可能有人会觉得需要手动显示依赖的方式会比较麻烦，但正因为显式反射依赖，开发者可以在反射构造子模块中实例时注入主模块中的一些能力，这样能更方便地实现从主模块拆分子模块的模块化工作。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了模块化的两种方案，两种方案都是除了主模块与子模块外还有一个接口层模块，接口层模块的存在可以更好的隔绝主模块与子模块，以实现更好的解耦合。<br>其中，第一种隐式依赖，主模块能通过语言级的spi能力快速与子模块通信，但无法向子模块注入主模块中的能力；第二种显式依赖，需要开发者手动编写运行时反射代码以实现主模块对子模块的依赖，但可以在反射时注入主模块的一些能力，来让子模块也能调用主模块的一些能力。</p>
+
       
     </div>
 
