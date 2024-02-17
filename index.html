@@ -159,7 +159,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2024/02/07/%E6%9E%81%E5%AE%A2/IDEA%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">IDE平台的插件开发实战</a>
+            <a href="/2024/02/07/%E6%9E%81%E5%AE%A2/IDEA%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">IDEA平台的插件开发实战</a>
         </h2>
 
         <div class="post-meta">
@@ -176,7 +176,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-02-08 00:19:23" itemprop="dateModified" datetime="2024-02-08T00:19:23+08:00">2024-02-08</time>
+                <time title="Modified: 2024-02-08 21:36:53" itemprop="dateModified" datetime="2024-02-08T21:36:53+08:00">2024-02-08</time>
               </span>
 
           
@@ -424,7 +424,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-02-08 21:07:25" itemprop="dateModified" datetime="2024-02-08T21:07:25+08:00">2024-02-08</time>
+                <time title="Modified: 2024-02-17 17:54:39" itemprop="dateModified" datetime="2024-02-17T17:54:39+08:00">2024-02-17</time>
               </span>
 
           
@@ -465,16 +465,17 @@
 <p>本文介绍两种常见常用的模块化方案。</p>
 <p><em>以下示例都假设有主模块（app）、接口模块(api)和子模块（impl）三种模块角色</em></p>
 <h3 id="隐式依赖（SPI）"><a href="#隐式依赖（SPI）" class="headerlink" title="隐式依赖（SPI）"></a>隐式依赖（SPI）</h3><p>SPI（service provider interface），通过使用Java提供的ServiceLoader接口，在工程结构的module&#x2F;resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，文件内是实现类的包路径，从而在运行时动态通过该服务接口名字查找到实现类的名字，并装载实例化，完成模块的注入。</p>
-<p>逻辑关系如图所示：<br>![[Pasted image 20240208202752.png]]</p>
+<p>逻辑关系如图所示：</p>
+<p>![[AndroidModularizationImplicitDependency.png]]</p>
 <p>具体实现：</p>
 <ol>
 <li>在接口模块中声明接口<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">package com.example.spi.api  </span><br><span class="line">  </span><br><span class="line">interface ILogInterface &#123;  </span><br><span class="line">    fun logD(msg: String)  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 <li>在实际业务模块中实现接口<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package com.example.spi.impl  </span><br><span class="line">  </span><br><span class="line">import android.util.Log  </span><br><span class="line">import com.example.spi.api.ILogInterface  </span><br><span class="line">  </span><br><span class="line">class Logger: ILogInterface &#123;  </span><br><span class="line">    companion object &#123;  </span><br><span class="line">        private const val TAG = &quot;Logger&quot;  </span><br><span class="line">    &#125;  </span><br><span class="line">    override fun logD(msg: String) &#123;  </span><br><span class="line">        Log.d(TAG, msg)  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>在接口模块中的resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，接口同名文件内部是实现类的包路径<br>![[Pasted image 20240115232112.png]]</li>
+<li>在接口模块中的resources&#x2F;META-INF&#x2F;services目录里创建服务接口同名文件，接口同名文件内部是实现类的包路径<br>![[AndroidModularizationSpifoloder.png]]</li>
 <li>在主模块中通过ServiceLoader与接口模块中的接口使用实际业务模块中的能力<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServiceLoader.load(ILogInterface::class.java, classLoader).iterator().next()?.logD(&quot;test&quot;)</span><br></pre></td></tr></table></figure></li>
 </ol>
 <h3 id="显式依赖"><a href="#显式依赖" class="headerlink" title="显式依赖"></a>显式依赖</h3><p>显示依赖也是借助运行时反射来达到依赖的，但这交由开发者来手动实现，并非同spi方式只需在接口模块编写配置文件即可。</p>
-<p>逻辑关系如图所示：<br>![[Pasted image 20240208203730.png]]</p>
+<p>逻辑关系如图所示：<br>![[AndroidModularizationExplicitDependency.png]]</p>
 <p>具体实现：</p>
 <ol>
 <li><p>同样地在接口模块中声明接口，主模块与子模块不直接通信，而是通过接口模块这个桥梁实现通信</p>
