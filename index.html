@@ -145,6 +145,159 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/02/23/%E6%9E%81%E5%AE%A2/KMP%E6%8E%A2%E7%B4%A2%E4%B8%8E%E5%AE%9E%E8%B7%B5%E5%88%86%E4%BA%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/02/23/%E6%9E%81%E5%AE%A2/KMP%E6%8E%A2%E7%B4%A2%E4%B8%8E%E5%AE%9E%E8%B7%B5%E5%88%86%E4%BA%AB/" class="post-title-link" itemprop="url">KMP探索与实践分享</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-02-23 00:00:00 / Modified: 19:10:27" itemprop="dateCreated datePublished" datetime="2024-02-23T00:00:00+08:00">2024-02-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本人所作的内部技术分享，脱敏同步</p>
+</blockquote>
+<h3 id="项目介绍"><a href="#项目介绍" class="headerlink" title="项目介绍"></a>项目介绍</h3><p><strong>项目背景</strong></p>
+<p>为了解决视频转WebP动图的痛点问题</p>
+<ol>
+<li>用的是外部工具，黑盒过程不可控</li>
+<li>webp体积过大，存在OOM风险</li>
+<li>帧率、质量没有统一标准</li>
+</ol>
+<p>期望提供一个视频转webp工具约束生产流程</p>
+<p><strong>方案选型</strong></p>
+<p>业务后台（链路长） vs 脚本工具（门槛高） vs KMP Compose（技术栈匹配能内部闭环）</p>
+<h3 id="建设过程"><a href="#建设过程" class="headerlink" title="建设过程"></a>建设过程</h3><p><strong>新建项目方式：</strong></p>
+<ol>
+<li>官方模板代码：<a target="_blank" rel="noopener" href="https://github.com/JetBrains/compose-multiplatform-template">https://github.com/JetBrains/compose-multiplatform-template</a></li>
+<li>Kotlin Multiplatform Mobile plugin<br>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103314.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103314.png]]</a></li>
+</ol>
+<p><strong>实践项目结构介绍</strong></p>
+<p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103400.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103400.png]]</a></p>
+<p><strong>Compose编程关键点</strong></p>
+<p>•composable 可组合的UI</p>
+<p>•mutableStateOf 更新发起点</p>
+<p>•remember 刷新前后状态继承</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">val taskList = remember &#123; mutableStateOf(LinkedList&lt;TaskData&gt;()) &#125; // list是更新点且可继承状态</span><br><span class="line">	</span><br><span class="line">Box(Modifier.wrapContentHeight(), contentAlignment = Alignment.TopCenter) &#123;   ListTaskView(taskList.value)</span><br><span class="line">&#125; // view data bind</span><br><span class="line"></span><br><span class="line">taskData.value = TaskData(inputPath = inputPath.value, outputPath = outputPath.value)taskList.value.addFirst(taskData.value) // list新增一个条目 </span><br><span class="line"></span><br><span class="line">// 条目状态变更</span><br><span class="line">taskData.value.inputPath = filePathtaskData.value.outputPath = outputPathtaskData.status.value = ConvertSuccess</span><br></pre></td></tr></table></figure>
+
+<h2 id="KMP介绍"><a href="#KMP介绍" class="headerlink" title="KMP介绍"></a>KMP介绍</h2><p>KMM, KMP, KMP Compose到底都是个啥？</p>
+<p>KMM（Kotlin Multiplatform Mobile）</p>
+<p>KMP（Kotlin Multiplatform）</p>
+<p>KMP Compose（Kotlin Multiplatform Compose）</p>
+<p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223190502.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223190502.png]]</a></p>
+<h2 id="跨平台框架对比"><a href="#跨平台框架对比" class="headerlink" title="跨平台框架对比"></a>跨平台框架对比</h2><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><a target="_blank" rel="noopener" href="https://flutter.dev/">Flutter</a></td>
+<td><a target="_blank" rel="noopener" href="https://reactnative.dev/">React Native</a></td>
+<td><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/multiplatform.html">Kotlin Multiplatform</a></td>
+</tr>
+<tr>
+<td>UI支持</td>
+<td>较强</td>
+<td>较强</td>
+<td>强</td>
+</tr>
+<tr>
+<td>开发语言</td>
+<td>Dart</td>
+<td>Javascript</td>
+<td>Kotlin</td>
+</tr>
+<tr>
+<td>迁移成本</td>
+<td>高</td>
+<td>高</td>
+<td>低</td>
+</tr>
+<tr>
+<td>运行环境</td>
+<td>Flutter引擎</td>
+<td>JSCore</td>
+<td>纯原生</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>较高</td>
+<td>一般</td>
+<td>高</td>
+</tr>
+</tbody></table>
+<p>KMP、Flutter和React Native都是用于开发跨平台移动应用的框架，各有其优缺点。</p>
+<h2 id="KMP发展趋势"><a href="#KMP发展趋势" class="headerlink" title="KMP发展趋势"></a>KMP发展趋势</h2><p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103536.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103536.png]]</a></p>
+<p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103549.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103549.png]]</a></p>
+<p>应用阵营：百度、快影、McDonald’s、Netflix… <a target="_blank" rel="noopener" href="https://www.jetbrains.com/help/kotlin-multiplatform-dev/case-studies.html">https://www.jetbrains.com/help/kotlin-multiplatform-dev/case-studies.html</a></p>
+<h2 id="KMP跨平台原理"><a href="#KMP跨平台原理" class="headerlink" title="KMP跨平台原理"></a><strong>KMP跨平台原理</strong></h2><p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223110224.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223110224.png]]</a></p>
+<p>KMP 的核心原理是通过 <strong>Kotlin K2编译器</strong>将共享的 Kotlin 代码编译成适用于目标平台的原生代码，从而实现在不同平台上共享代码的目的。</p>
+<h2 id="项目结构与运行"><a href="#项目结构与运行" class="headerlink" title="项目结构与运行"></a>项目结构与运行</h2><h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103617.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223103617.png]]</a><br>共享模块中的平台命名文件和平台特定模块中的文件有何区别？平台特定模块更多是作为一个应用入口。</p>
+<h3 id="依赖管理"><a href="#依赖管理" class="headerlink" title="依赖管理"></a>依赖管理</h3><p>公共依赖（e.g. <a target="_blank" rel="noopener" href="https://github.com/InsertKoinIO/koin">Koin</a>, <a target="_blank" rel="noopener" href="https://github.com/apollographql/apollo-kotlin">Apollo</a>, <a target="_blank" rel="noopener" href="https://github.com/square/okio">Okio</a>）</p>
+<p>特定平台依赖 (e.g. Glide, Fresco, AFNetworking, YYModel)</p>
+<h3 id="构建运行"><a href="#构建运行" class="headerlink" title="构建运行"></a>构建运行</h3><p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223110201.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223110201.png]]</a></p>
+<h3 id="项目形态"><a href="#项目形态" class="headerlink" title="项目形态"></a>项目形态</h3><p>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223190546.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/kmpshare/20240223190546.png]]</a></p>
+<ul>
+<li>共享一段逻辑<br>  共享应用的独立共同逻辑。</li>
+<li>共享逻辑但保持原生UI<br>  开始新项目时使用Kotlin Multiplatform，只需实现一次数据处理和业务逻辑，并且保持 UI 原生。</li>
+<li>共享逻辑与UI<br>  使用Compose Multiplatform提高开发效率，共享逻辑与UI的代码。</li>
+</ul>
+<h2 id="What’s-more"><a href="#What’s-more" class="headerlink" title="What’s more"></a>What’s more</h2><p>官方示例：<a target="_blank" rel="noopener" href="https://github.com/android/kotlin-multiplatform-samples">https://github.com/android/kotlin-multiplatform-samples</a></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/multiplatform-get-started.html">KMP Development</a><br><a target="_blank" rel="noopener" href="https://blog.jetbrains.com/wp-content/uploads/2023/12/day1-2-kmp_in_meituan.pdf">跨平台开发的后起之秀</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7214412608400212028">Kotlin Multiplatform Mobile 跨平台原理</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/02/07/%E6%9E%81%E5%AE%A2/IDEA%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -635,12 +788,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
