@@ -145,6 +145,92 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/03/21/Android/%E4%BD%95%E4%BB%A5ViewModel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/21/Android/%E4%BD%95%E4%BB%A5ViewModel/" class="post-title-link" itemprop="url">何以ViewModel</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-03-21 00:00:00 / Modified: 22:47:31" itemprop="dateCreated datePublished" datetime="2024-03-21T00:00:00+08:00">2024-03-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>ViewModel是Google近年强推的开发最佳实践工具包Jetpack中的重要且常被开发者使用的一员，用法比较简单，网上有许多介绍了其用法的文章，故此文不再介绍其用法。本文会从源码角度尝试解答ViewModel的几个相关问题：</p>
+<ol>
+<li>ViewModel实例如何创建与存储</li>
+<li>什么时候会清空数据</li>
+<li>为何配置发生变化的销毁不会导致数据清空</li>
+<li>ViewModel如何避免造成内存泄漏</li>
+<li>AndroidViewModel怎么做到不会发生内存泄漏的</li>
+</ol>
+<h2 id="1-ViewModel实例如何创建与存储"><a href="#1-ViewModel实例如何创建与存储" class="headerlink" title="1. ViewModel实例如何创建与存储"></a>1. ViewModel实例如何创建与存储</h2><p>一切得从获取ViewModel具体实例的方法开始说起。<br>以<code>val viewModel = ViewModelProvider(this).get(TestViewModel::class.java)</code> 为例说明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class ViewModelProvider &#123;</span><br><span class="line"></span><br><span class="line">	private final Factory mFactory;  // 用于构造ViewModel实例</span><br><span class="line">	private final ViewModelStore mViewModelStore;  // 用于存储ViewModel实例</span><br><span class="line">	</span><br><span class="line">	// 构造ViewModelProvider对象，一般Activity or Fragment都实现了ViewModelStoreOwner接口和ViewModelProvider.Factory接口</span><br><span class="line">	public ViewModelProvider(@NonNull ViewModelStoreOwner owner) &#123;  </span><br><span class="line">		this(owner.getViewModelStore(), owner instanceof HasDefaultViewModelProviderFactory  </span><br><span class="line">		? ((HasDefaultViewModelProviderFactory) owner).getDefaultViewModelProviderFactory()  </span><br><span class="line">		: NewInstanceFactory.getInstance());  </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public ViewModelProvider(@NonNull ViewModelStore store, @NonNull Factory factory) &#123;  </span><br><span class="line">		mFactory = factory;  </span><br><span class="line">		mViewModelStore = store;  </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在构造ViewModelProvider对象实例时，ViewModelProvider会通过入参获取到ViewModel实例的创建者和存储者。接下来看看ViewModel实例是如何被创建及存储的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public &lt;T extends ViewModel&gt; T get(@NonNull Class&lt;T&gt; modelClass) &#123;</span><br><span class="line">	// 把传入的类名组成一个key去读取ViewModel实例</span><br><span class="line">	String canonicalName = modelClass.getCanonicalName();  </span><br><span class="line">	if (canonicalName == null) &#123;  </span><br><span class="line">	throw new IllegalArgumentException(&quot;Local and anonymous classes can not be ViewModels&quot;);  </span><br><span class="line">	&#125;  </span><br><span class="line">	return get(DEFAULT_KEY + &quot;:&quot; + canonicalName, modelClass);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public &lt;T extends ViewModel&gt; T get(@NonNull String key, @NonNull Class&lt;T&gt; modelClass) &#123;  </span><br><span class="line">	ViewModel viewModel = mViewModelStore.get(key);  </span><br><span class="line">	// 会在ViewModelStore的HashMap&lt;String, ViewModel&gt;类型成员mMap中通过组合的key去读取</span><br><span class="line">	if (modelClass.isInstance(viewModel)) &#123;  </span><br><span class="line">		if (mFactory instanceof OnRequeryFactory) &#123;  </span><br><span class="line">			((OnRequeryFactory) mFactory).onRequery(viewModel);  </span><br><span class="line">		&#125;  </span><br><span class="line">		// 实例存在且合理，则返回读取到的ViewModel实例</span><br><span class="line">		return (T) viewModel;  </span><br><span class="line">	&#125; else &#123;  </span><br><span class="line">		//noinspection StatementWithEmptyBody  </span><br><span class="line">		if (viewModel != null) &#123;  </span><br><span class="line">			// TODO: log a warning.  </span><br><span class="line">		&#125;  </span><br><span class="line">	&#125;  </span><br><span class="line">	if (mFactory instanceof KeyedFactory) &#123;  </span><br><span class="line">		viewModel = ((KeyedFactory) mFactory).create(key, modelClass);  </span><br><span class="line">	&#125; else &#123;  </span><br><span class="line">		// 通过类反射的方式去构造实例</span><br><span class="line">		viewModel = mFactory.create(modelClass);  </span><br><span class="line">	&#125;  </span><br><span class="line">	// 存储实例</span><br><span class="line">	mViewModelStore.put(key, viewModel);  </span><br><span class="line">	return (T) viewModel;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>总结：在获取ViewModel的时候会先从ViewModelStore中的HashMap数据结构中读取实例，如果ViewModelStore中不存在该实例则通过反射方式创建实例并且存储到ViewModelStore中。</p>
+<h2 id="2-什么时候会清空数据"><a href="#2-什么时候会清空数据" class="headerlink" title="2. 什么时候会清空数据"></a>2. 什么时候会清空数据</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">// androidx.lifecycle.ViewModel</span><br><span class="line">protected void onCleared() &#123;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">@MainThread  </span><br><span class="line">final void clear() &#123;  </span><br><span class="line">	mCleared = true;  </span><br><span class="line">	if (mBagOfTags != null) &#123;  </span><br><span class="line">		synchronized (mBagOfTags) &#123;  </span><br><span class="line">		for (Object value : mBagOfTags.values()) &#123;   </span><br><span class="line">			closeWithRuntimeException(value);  </span><br><span class="line">		&#125;  </span><br><span class="line">	&#125;  </span><br><span class="line">	&#125;  </span><br><span class="line">	onCleared();  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// androidx.lifecycle.ViewModelStore</span><br><span class="line">public final void clear() &#123;  </span><br><span class="line">	for (ViewModel vm : mMap.values()) &#123;  </span><br><span class="line">		vm.clear();  </span><br><span class="line">	&#125;  </span><br><span class="line">	mMap.clear();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ViewModel数据清空即被调用onCleared方法，而ViewModel的onCleared方法只会在ViewModelStore#clear中会被调用，阅读源码发现这意味着ViewModelStore的HashMap成员中的ViewModel，而这只会发生在宿主Activity#onDestroy或Fragment被移除时：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// androidx.activity.ComponentActivity</span><br><span class="line">getLifecycle().addObserver(new LifecycleEventObserver() &#123;  </span><br><span class="line">	@Override  </span><br><span class="line">	public void onStateChanged(@NonNull LifecycleOwner source,  </span><br><span class="line">	@NonNull Lifecycle.Event event) &#123;  </span><br><span class="line">		if (event == Lifecycle.Event.ON_DESTROY) &#123;  </span><br><span class="line">			// Clear out the available context  </span><br><span class="line">			mContextAwareHelper.clearAvailableContext();  </span><br><span class="line">			// And clear the ViewModelStore  </span><br><span class="line">			if (!isChangingConfigurations()) &#123;  // notice!!!</span><br><span class="line">				getViewModelStore().clear();  </span><br><span class="line">			&#125;  </span><br><span class="line">		&#125;  </span><br><span class="line">	&#125;  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>总结：会在宿主Activity或Fragment被销毁时清空数据<br>Google官方对于ViewModel生命周期与Activity生命周期的关系说明：<br><img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/android/viewmodel/viewmodellifecycle.png"></p>
+<h2 id="3-为何配置发生变化的销毁不会导致数据清空"><a href="#3-为何配置发生变化的销毁不会导致数据清空" class="headerlink" title="3. 为何配置发生变化的销毁不会导致数据清空"></a>3. 为何配置发生变化的销毁不会导致数据清空</h2><p>从上面notice!!!标注的代码行中可以发现，只有是非配置变化导致的Activity#onDestroy才会触发ViewModelStore的clear方法！</p>
+<h2 id="4-ViewModel如何避免造成内存泄漏"><a href="#4-ViewModel如何避免造成内存泄漏" class="headerlink" title="4. ViewModel如何避免造成内存泄漏"></a>4. ViewModel如何避免造成内存泄漏</h2><p>经分析，我们已经知道在ViewModel的宿主Activity或Fragment在被销毁时会调用ViewModel#clear，但假设我们在ViewModel中持有的宿主的引用，而又不在clear时释放引用，那此时便会造成内存泄漏。</p>
+<p>一些避免ViewModel造成内存泄漏的建议和做法：</p>
+<ol>
+<li>避免持有宿主的引用</li>
+<li>在ViewModel#clear时释放宿主的引用、取消网络请求、关闭数据库连接，如：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class MyViewModel : ViewModel() &#123;</span><br><span class="line">    private var activityRef: WeakReference&lt;Activity&gt;? = null</span><br><span class="line"></span><br><span class="line">    fun setActivity(activity: Activity) &#123;</span><br><span class="line">        activityRef = WeakReference(activity)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fun clear() &#123;</span><br><span class="line">        activityRef?.clear()</span><br><span class="line">        activityRef = null</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="5-AndroidViewModel怎么做到不会发生内存泄漏的"><a href="#5-AndroidViewModel怎么做到不会发生内存泄漏的" class="headerlink" title="5. AndroidViewModel怎么做到不会发生内存泄漏的"></a>5. AndroidViewModel怎么做到不会发生内存泄漏的</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class AndroidViewModel extends ViewModel &#123;  </span><br><span class="line">	@SuppressLint(&quot;StaticFieldLeak&quot;)  </span><br><span class="line">	private Application mApplication;  </span><br><span class="line">	  </span><br><span class="line">	public AndroidViewModel(@NonNull Application application) &#123;  </span><br><span class="line">	mApplication = application;  </span><br><span class="line">	&#125;  </span><br><span class="line">	  </span><br><span class="line">	/**  </span><br><span class="line">	* Return the application.  </span><br><span class="line">	*/  </span><br><span class="line">	@SuppressWarnings(&quot;TypeParameterUnusedInFormals&quot;)  </span><br><span class="line">	@NonNull  </span><br><span class="line">	public &lt;T extends Application&gt; T getApplication() &#123;  </span><br><span class="line">		return (T) mApplication;  </span><br><span class="line">	&#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>来看下AndroidViewModel的源码，AndroidViewModel是ViewModel的一个子类，它提供了一个Application对象的引用，可以在AndroidViewModel中使用Application Context而不是Activity的Context来避免内存泄漏。这是因为Application Context的生命周期与应用程序的生命周期相同，而Activity的生命周期是短暂的，当Activity被销毁时，它的Context也会被销毁，如果在ViewModel中使用了Activity的Context，就可能会导致内存泄漏。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/02/23/%E6%9E%81%E5%AE%A2/KMP%E6%8E%A2%E7%B4%A2%E4%B8%8E%E5%AE%9E%E8%B7%B5%E5%88%86%E4%BA%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -788,12 +874,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
