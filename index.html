@@ -145,6 +145,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/05/16/%E6%9E%81%E5%AE%A2/WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/" class="post-title-link" itemprop="url">WebP压缩工具建设</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-05-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-16T00:00:00+08:00">2024-05-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-05-18 15:06:43" itemprop="dateModified" datetime="2024-05-18T15:06:43+08:00">2024-05-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="与其他图片格式对比"><a href="#与其他图片格式对比" class="headerlink" title="与其他图片格式对比"></a>与其他图片格式对比</h2><p>WebP是一种由Google开发的现代图像格式，旨在提供更高的压缩率和更好的图像质量，同时保持与现有图像格式相似的视觉质量。与传统的JPEG、PNG和GIF格式相比，WebP具有以下优缺点：</p>
+<p>优点：</p>
+<ol>
+<li>更高的压缩率：WebP通常比JPEG格式具有更高的压缩率，可以减小图像文件的大小，加快网页加载速度。</li>
+<li>更好的图像质量：相同文件大小下，WebP格式的图像质量通常比JPEG更好，可以减少图像的失真。</li>
+<li>支持透明度：WebP格式支持透明度，可以创建带有半透明效果的图像，而JPEG不支持透明度。</li>
+<li>动态图像支持：WebP格式支持动态图像，可以替代GIF格式，提供更高的压缩率和更好的图像质量。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>兼容性：WebP格式相对较新，不是所有的浏览器和应用程序都支持该格式，可能会导致兼容性问题。</li>
+<li>编解码速度：WebP格式的编解码速度可能比JPEG和PNG慢一些，特别是在处理大型图像时。</li>
+<li>动态图像性能：虽然WebP支持动态图像，但在某些情况下可能性能不如GIF格式。</li>
+</ol>
+<p>总的来说，WebP格式在压缩率和图像质量方面有优势，特别适合用于网页图像的优化。但在一些特定情况下，如兼容性和动态图像性能方面可能存在一些缺点。</p>
+<h2 id="压缩处理"><a href="#压缩处理" class="headerlink" title="压缩处理"></a>压缩处理</h2><p>生成WebP图像通常使用Google的官方工具cwebp命令行工具或libwebp C库。<br>cwebp支持许多参数来控制输出的WebP图像的质量和大小。以下是一些常用的参数：</p>
+<ul>
+<li><strong><code>-q &lt;float&gt;</code>：设置输出的图像质量，范围是0（最差）到100（最好）。默认值是75。</strong></li>
+<li><strong><code>-r</code>: 帧率</strong></li>
+<li><code>-m &lt;int&gt;</code>：设置压缩效率，范围是0（最快）到6（最慢）。更高的值会产生更小但需要更长时间来编码的文件。默认值是4。</li>
+<li><code>-lossless</code>：生成无损的WebP图像。</li>
+<li><code>-alpha_q &lt;int&gt;</code>：设置透明度通道的质量。更低的值会产生更小的文件但透明度质量更差。</li>
+<li><code>-resize &lt;width&gt; &lt;height&gt;</code>：改变图像的大小到指定的宽度和高度。</li>
+<li><code>-o &lt;file&gt;</code>：指定输出文件的名称。</li>
+<li><code>-v</code>：显示详细的编码信息。</li>
+<li><code>-h</code>：显示帮助信息。</li>
+</ul>
+<p>例如，以下命令将JPEG图像转换为质量为80的WebP图像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cwebp -q 80 input.jpg -o output.webp</span><br></pre></td></tr></table></figure>
+
+<p>注意，cwebp的所有参数都是可选的。如果你不提供任何参数，cwebp将使用默认的设置来生成WebP图像。</p>
+<p>另外，ffmpeg中也集成了cwebp，可以通过以下命令将视频文件转换成WebP图像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -vcodec libwebp -vf scale=480:640 -lossless 0 -loop 0 -r 9 -q 8 output.webp</span><br></pre></td></tr></table></figure>
+
+<h2 id="实践应用"><a href="#实践应用" class="headerlink" title="实践应用"></a>实践应用</h2><blockquote>
+<p>背景：线上能将视频文件转成webp动图的工具的转换过程对用户来说都是一个黑盒操作，我们在使用的时候无法控制转换的参数，如转换的帧率、质量等等，这导致有时得到的webp动图不合期望，故这里开发了一个将视频文件转换成webp动图的mac桌面版工具。</p>
+</blockquote>
+<p><strong>项目链接</strong><br><a target="_blank" rel="noopener" href="https://github.com/Darrenyuen/WebPTransTool">https://github.com/Darrenyuen/WebPTransTool</a></p>
+<p><strong>相关技术</strong></p>
+<ul>
+<li>KMP：开发桌面工具</li>
+<li>集成ffmep可执行文件：其中集成的cwebp提供了转换能力</li>
+</ul>
+<p><strong>效果展示</strong></p>
+<ol>
+<li><p>导入需要转换的原始视频，目前仅支持mp4文件和mov文件<br>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_1.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_1.png]]</a></p>
+</li>
+<li><p>导入后会弹出配置选择弹窗，默认配置是帧率为9、质量为8、使用旧编解码器，转换耗时长与视频大小及配置有关<br>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_2.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_2.png]]</a></p>
+</li>
+<li><p>转换完成后可以看到<br>![[<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_3.png]]">https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_3.png]]</a></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/03/21/Android/%E4%BD%95%E4%BB%A5ViewModel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -586,10 +702,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-01-12 00:00:00 / Modified: 10:47:36" itemprop="dateCreated datePublished" datetime="2024-01-12T00:00:00+08:00">2024-01-12</time>
+              <time title="Created: 2024-01-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-12T00:00:00+08:00">2024-01-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-05-18 15:08:57" itemprop="dateModified" datetime="2024-05-18T15:08:57+08:00">2024-05-18</time>
+              </span>
 
           
 
@@ -611,7 +733,13 @@
 </ul>
 <h2 id="Skill"><a href="#Skill" class="headerlink" title="Skill"></a>Skill</h2><ul>
 <li>实时导出日志：adb logcat &gt; logcat.log</li>
-<li>adb shell am start -D -n com.xingin.capa&#x2F;.CapaDemoActivity 该命令会等debug attach后才启动指定acitivity</li>
+<li>adb shell am start -D -n com.darrenyuen.demo&#x2F;.DemoActivity 该命令会等debug attach后才启动指定acitivity</li>
+</ul>
+<ul>
+<li>git bisect good&#x2F;bad 二分定位出问题的commit</li>
+</ul>
+<ul>
+<li>adb logcat -b crash 打印最近一次的crash堆栈</li>
 </ul>
 
       
@@ -874,12 +1002,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
