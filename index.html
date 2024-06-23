@@ -145,6 +145,90 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/06/23/Android/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/06/23/Android/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">Kotlin 协程知识点记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-06-23 00:00:00 / Modified: 23:03:51" itemprop="dateCreated datePublished" datetime="2024-06-23T00:00:00+08:00">2024-06-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="启动模式"><a href="#启动模式" class="headerlink" title="启动模式"></a>启动模式</h3><ul>
+<li>DEFAULT</li>
+<li>LAZY</li>
+<li>ATOMIC</li>
+<li>UNDISPATCHED</li>
+</ul>
+<h3 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h3><ul>
+<li>Default</li>
+<li>Main</li>
+<li>Unconfined</li>
+<li>IO</li>
+</ul>
+<h3 id="上下文-CoroutineContext"><a href="#上下文-CoroutineContext" class="headerlink" title="上下文 CoroutineContext"></a>上下文 CoroutineContext</h3><h3 id="launch与async"><a href="#launch与async" class="headerlink" title="launch与async"></a>launch与async</h3><h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><ul>
+<li>Job的作用，没Job实例的协程不能被取消</li>
+</ul>
+<h3 id="挂起与恢复"><a href="#挂起与恢复" class="headerlink" title="挂起与恢复"></a>挂起与恢复</h3><ul>
+<li>挂起标记 - return非阻塞式挂起当前线程</li>
+<li>invokeSuspend - 恢复调用</li>
+</ul>
+<h3 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h3><h4 id="suspendCoroutine"><a href="#suspendCoroutine" class="headerlink" title="suspendCoroutine"></a>suspendCoroutine</h4><h4 id="suspendCancellableCoroutine"><a href="#suspendCancellableCoroutine" class="headerlink" title="suspendCancellableCoroutine"></a>suspendCancellableCoroutine</h4><ul>
+<li>可在协程被取消时收到回调 CancellableContinuation#invokeOnCancellation</li>
+</ul>
+<h4 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h4><h4 id="Flow"><a href="#Flow" class="headerlink" title="Flow"></a>Flow</h4><ul>
+<li>冷流：有观察者消费时才执行</li>
+<li>热流：马上执行</li>
+</ul>
+<h4 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h4>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1002,12 +1086,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>

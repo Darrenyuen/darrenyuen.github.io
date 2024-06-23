@@ -20,19 +20,21 @@
     var CONFIG = {"hostname":"darrenyuen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="基于Github+Hexo从零开始搭建个人博客(上)基于Github+Hexo从零开始搭建个人博客(下)如何使用Github+Hexo快速搭建个人博客如何更新网站配置Hexo + Obsidian + Git 完美的博客部署与编辑方案">
+  <meta name="description" content="启动模式 DEFAULT LAZY ATOMIC UNDISPATCHED  调度器 Default Main Unconfined IO  上下文 CoroutineContextlaunch与async拦截器作用域 Job的作用，没Job实例的协程不能被取消  挂起与恢复 挂起标记 - return非阻塞式挂起当前线程 invokeSuspend - 恢复调用  常用suspendCorout">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于Hexo搭建、部署、管理个人博客网站">
-<meta property="og:url" content="https://darrenyuen.github.io/2023/12/23/%E5%9F%BA%E4%BA%8EHexo%E6%90%AD%E5%BB%BA%E3%80%81%E9%83%A8%E7%BD%B2%E3%80%81%E7%AE%A1%E7%90%86%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/index.html">
+<meta property="og:title" content="Kotlin 协程知识点记录">
+<meta property="og:url" content="https://darrenyuen.github.io/2024/06/23/Android/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="Darren Yuen">
-<meta property="og:description" content="基于Github+Hexo从零开始搭建个人博客(上)基于Github+Hexo从零开始搭建个人博客(下)如何使用Github+Hexo快速搭建个人博客如何更新网站配置Hexo + Obsidian + Git 完美的博客部署与编辑方案">
+<meta property="og:description" content="启动模式 DEFAULT LAZY ATOMIC UNDISPATCHED  调度器 Default Main Unconfined IO  上下文 CoroutineContextlaunch与async拦截器作用域 Job的作用，没Job实例的协程不能被取消  挂起与恢复 挂起标记 - return非阻塞式挂起当前线程 invokeSuspend - 恢复调用  常用suspendCorout">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-12-23T11:28:05.000Z">
-<meta property="article:modified_time" content="2024-01-12T03:09:26.639Z">
+<meta property="article:published_time" content="2024-06-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-23T15:03:51.432Z">
 <meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="Kotlin">
+<meta property="article:tag" content="协程">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://darrenyuen.github.io/2023/12/23/%E5%9F%BA%E4%BA%8EHexo%E6%90%AD%E5%BB%BA%E3%80%81%E9%83%A8%E7%BD%B2%E3%80%81%E7%AE%A1%E7%90%86%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/">
+<link rel="canonical" href="https://darrenyuen.github.io/2024/06/23/Android/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">
 
 
 <script id="page-configurations">
@@ -45,7 +47,7 @@
   };
 </script>
 
-  <title>基于Hexo搭建、部署、管理个人博客网站 | Darren Yuen</title>
+  <title>Kotlin 协程知识点记录 | Darren Yuen</title>
   
 
 
@@ -150,7 +152,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2023/12/23/%E5%9F%BA%E4%BA%8EHexo%E6%90%AD%E5%BB%BA%E3%80%81%E9%83%A8%E7%BD%B2%E3%80%81%E7%AE%A1%E7%90%86%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/06/23/Android/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -163,7 +165,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          基于Hexo搭建、部署、管理个人博客网站
+          Kotlin 协程知识点记录
         </h1>
 
         <div class="post-meta">
@@ -172,16 +174,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2023-12-23 19:28:05" itemprop="dateCreated datePublished" datetime="2023-12-23T19:28:05+08:00">2023-12-23</time>
+              <time title="Created: 2024-06-23 00:00:00 / Modified: 23:03:51" itemprop="dateCreated datePublished" datetime="2024-06-23T00:00:00+08:00">2024-06-23</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-01-12 11:09:26" itemprop="dateModified" datetime="2024-01-12T11:09:26+08:00">2024-01-12</time>
-              </span>
 
           
 
@@ -194,8 +190,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><a target="_blank" rel="noopener" href="https://github.com/Byron4j/CookBook/blob/master/Git/0-%E5%9F%BA%E4%BA%8EGithub%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2.md">基于Github+Hexo从零开始搭建个人博客(上)</a><br><a target="_blank" rel="noopener" href="https://github.com/Byron4j/CookBook/blob/master/Git/0-%E5%9F%BA%E4%BA%8EGithub%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2(%E4%B8%8B).md">基于Github+Hexo从零开始搭建个人博客(下)</a><br><a target="_blank" rel="noopener" href="https://github.com/Byron4j/CookBook/blob/master/Git/1-Github_Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2.md">如何使用Github+Hexo快速搭建个人博客</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/36103443">如何更新网站配置</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7120189614660255781">Hexo + Obsidian + Git 完美的博客部署与编辑方案</a></p>
-
+        <h3 id="启动模式"><a href="#启动模式" class="headerlink" title="启动模式"></a>启动模式</h3><ul>
+<li>DEFAULT</li>
+<li>LAZY</li>
+<li>ATOMIC</li>
+<li>UNDISPATCHED</li>
+</ul>
+<h3 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h3><ul>
+<li>Default</li>
+<li>Main</li>
+<li>Unconfined</li>
+<li>IO</li>
+</ul>
+<h3 id="上下文-CoroutineContext"><a href="#上下文-CoroutineContext" class="headerlink" title="上下文 CoroutineContext"></a>上下文 CoroutineContext</h3><h3 id="launch与async"><a href="#launch与async" class="headerlink" title="launch与async"></a>launch与async</h3><h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><ul>
+<li>Job的作用，没Job实例的协程不能被取消</li>
+</ul>
+<h3 id="挂起与恢复"><a href="#挂起与恢复" class="headerlink" title="挂起与恢复"></a>挂起与恢复</h3><ul>
+<li>挂起标记 - return非阻塞式挂起当前线程</li>
+<li>invokeSuspend - 恢复调用</li>
+</ul>
+<h3 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h3><h4 id="suspendCoroutine"><a href="#suspendCoroutine" class="headerlink" title="suspendCoroutine"></a>suspendCoroutine</h4><h4 id="suspendCancellableCoroutine"><a href="#suspendCancellableCoroutine" class="headerlink" title="suspendCancellableCoroutine"></a>suspendCancellableCoroutine</h4><ul>
+<li>可在协程被取消时收到回调 CancellableContinuation#invokeOnCancellation</li>
+</ul>
+<h4 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h4><h4 id="Flow"><a href="#Flow" class="headerlink" title="Flow"></a>Flow</h4><ul>
+<li>冷流：有观察者消费时才执行</li>
+<li>热流：马上执行</li>
+</ul>
+<h4 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h4>
     </div>
 
     
@@ -203,17 +224,21 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+              <a href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag"># 协程</a>
+          </div>
 
         
 
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2024/01/12/Android/Android%E6%A8%A1%E5%9D%97%E5%8C%96%E5%AE%9E%E8%B7%B5%E6%96%B9%E6%A1%88/" rel="next" title="Android模块化实践方案">
-      Android模块化实践方案 <i class="fa fa-chevron-right"></i>
+    <a href="/2024/05/16/%E6%9E%81%E5%AE%A2/WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/" rel="prev" title="WebP压缩工具建设">
+      <i class="fa fa-chevron-left"></i> WebP压缩工具建设
     </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -272,6 +297,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">启动模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">调度器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87-CoroutineContext"><span class="nav-number">3.</span> <span class="nav-text">上下文 CoroutineContext</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#launch%E4%B8%8Easync"><span class="nav-number">4.</span> <span class="nav-text">launch与async</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">拦截器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-number">6.</span> <span class="nav-text">作用域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%B5%B7%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="nav-number">7.</span> <span class="nav-text">挂起与恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8"><span class="nav-number">8.</span> <span class="nav-text">常用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#suspendCoroutine"><span class="nav-number">8.1.</span> <span class="nav-text">suspendCoroutine</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#suspendCancellableCoroutine"><span class="nav-number">8.2.</span> <span class="nav-text">suspendCancellableCoroutine</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Channel"><span class="nav-number">8.3.</span> <span class="nav-text">Channel</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Flow"><span class="nav-number">8.4.</span> <span class="nav-text">Flow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Select"><span class="nav-number">8.5.</span> <span class="nav-text">Select</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
