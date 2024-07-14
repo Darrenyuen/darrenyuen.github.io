@@ -259,10 +259,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-06-23 00:00:00 / Modified: 23:03:51" itemprop="dateCreated datePublished" datetime="2024-06-23T00:00:00+08:00">2024-06-23</time>
+              <time title="Created: 2024-06-23 00:00:00" itemprop="dateCreated datePublished" datetime="2024-06-23T00:00:00+08:00">2024-06-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-07-14 22:14:14" itemprop="dateModified" datetime="2024-07-14T22:14:14+08:00">2024-07-14</time>
+              </span>
 
           
 
@@ -276,25 +282,62 @@
 
       
           <h3 id="启动模式"><a href="#启动模式" class="headerlink" title="启动模式"></a>启动模式</h3><ul>
-<li>DEFAULT</li>
-<li>LAZY</li>
-<li>ATOMIC</li>
-<li>UNDISPATCHED</li>
+<li>DEFAULT：默认启动模式，协程会在创建后立即开始调度，如果在调度前协程被取消，其将直接进入取消响应的状态</li>
+<li>LAZY：懒启动模式，协程被调用才会启动执行，包括调用协程的start，join或者await等方法时才会被调度，如果调度前就取消那么该协程将直接进入异常结束状态</li>
+<li>ATOMIC：原子启动模式，立即开始调度，在执行第一个挂起点之前协程不能被取消</li>
+<li>UNDISPATCHED：不受限的启动模式，协程创建后立即在当前函数调用栈中执行，直到遇到第一个真正挂起的点才会切线程<br>立即调度：表示协程的调度器会立即接收调度指令，但具体执行的时机以及在哪个线程上执行，还需要根据调度器的具体情况而定</li>
 </ul>
 <h3 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h3><ul>
-<li>Default</li>
-<li>Main</li>
-<li>Unconfined</li>
-<li>IO</li>
+<li>Default：默认调度器，适合处理后台计算，是一个CPU密集型任务调度器</li>
+<li>Main：UI调度器，平台相关，在Android上是主线程</li>
+<li>Unconfined：无所谓调度器，挂起点恢复执行时会在恢复所在的线程上直接执行，如A（创建协程的线程）-B（协程挂起的线程）-B（协程恢复后执行的线程）</li>
+<li>IO：IO调度器，适合执行IO相关操作，是一个IO密集型任务调度器</li>
 </ul>
-<h3 id="上下文-CoroutineContext"><a href="#上下文-CoroutineContext" class="headerlink" title="上下文 CoroutineContext"></a>上下文 CoroutineContext</h3><h3 id="launch与async"><a href="#launch与async" class="headerlink" title="launch与async"></a>launch与async</h3><h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><ul>
+<h3 id="上下文-CoroutineContext"><a href="#上下文-CoroutineContext" class="headerlink" title="上下文 CoroutineContext"></a>上下文 CoroutineContext</h3><ul>
+<li>可通过实现AbstractCoroutineContextElement抽象类自定义上下文</li>
+<li>常用的有AndroidExceptionPreHandler、CoroutineName</li>
 <li>Job的作用，没Job实例的协程不能被取消</li>
 </ul>
-<h3 id="挂起与恢复"><a href="#挂起与恢复" class="headerlink" title="挂起与恢复"></a>挂起与恢复</h3><ul>
-<li>挂起标记 - return非阻塞式挂起当前线程</li>
-<li>invokeSuspend - 恢复调用</li>
+<h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><blockquote>
+<p>可作为上下文的一部分</p>
+</blockquote>
+<p>可以拦截协程异步回调时的恢复调用，即可以在挂起点恢复执行的位置添加拦截器实现AOP操作。</p>
+<h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><p>作用域的概念，主要用以明确协程之间的父子关系，以及对于取消或者异常处理等传播行为。<br>协程作用域包括以下三种：</p>
+<ol>
+<li>顶级作用域：没有父协程的协程所在的作用域为顶级作用域</li>
+<li>协同作用域：协程中启动新的协程，新协程为所在协程的子协程，这种情况下子协程所在的作用域默认为协同作用域。子协程抛出的未捕获异常都将传递给父协程处理，父协程同时也会被取消</li>
+<li>主从作用域：与协同作用域在协程的父子关系上一致，区别在于处于该作用域下的协程出现未捕获的异常时不会将异常向上传递给父协程<br>主从作用域可通过阻断子协程未捕获的异常向上传播实现</li>
+</ol>
+<p>除这三种作用域中提到的行为外，父子协程之间还存在以下规则：</p>
+<ol>
+<li>父协程被取消，所有子协程均被取消</li>
+<li>父协程需要等待子协程执行完毕之后才能最终进入完成状态</li>
+<li>子协程会继承父协程的协程上下文中的元素，如果自身有相同的key成员，则覆盖父协程对应的key，覆盖效果仅限子协程作用域</li>
+</ol>
+<h3 id="启动协程的方式"><a href="#启动协程的方式" class="headerlink" title="启动协程的方式"></a>启动协程的方式</h3><h4 id="launch"><a href="#launch" class="headerlink" title="launch"></a>launch</h4><ul>
+<li>返回Job对象，但无法获取协程运行结果</li>
 </ul>
-<h3 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h3><h4 id="suspendCoroutine"><a href="#suspendCoroutine" class="headerlink" title="suspendCoroutine"></a>suspendCoroutine</h4><h4 id="suspendCancellableCoroutine"><a href="#suspendCancellableCoroutine" class="headerlink" title="suspendCancellableCoroutine"></a>suspendCancellableCoroutine</h4><ul>
+<h4 id="async"><a href="#async" class="headerlink" title="async"></a>async</h4><ul>
+<li>返回Deffer对象，可以获取协程运行结果</li>
+</ul>
+<p>Deffer中await()方法的作用：</p>
+<ul>
+<li>在协程已经执行完成时，立即返回协程执行的结果，如果协程异常结束，则抛出异常</li>
+<li>如果协程尚未执行完成，则挂起直到协程执行完成，与join类似</li>
+</ul>
+<h3 id="挂起与恢复"><a href="#挂起与恢复" class="headerlink" title="挂起与恢复"></a>挂起与恢复</h3><blockquote>
+<p>挂起的本质是程序执行流程发生异步调用时，当前调用流程的执行状态进入等待状态。<br>异步调用发生与否，取决于恢复调用函数与对应的挂起函数的调用是否在相同的调用栈上，切换函数调用栈的方法可以是切换到其他线程上执行，也可以是不切换线程但在当前函数返回之后的某一个时刻再执行。</p>
+</blockquote>
+<ul>
+<li>协程内部挂起函数的调用处被称为挂起点，挂起点出现异步调用则当前协程被挂起，直到对应的Continuation的恢复调用函数被调用才会恢复执行</li>
+<li>挂起标记 - return非阻塞式挂起当前线程</li>
+<li>invokeSuspend、resume - 恢复调用</li>
+</ul>
+<p>挂起的本质</p>
+<h3 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h3><h4 id="suspendCoroutine"><a href="#suspendCoroutine" class="headerlink" title="suspendCoroutine"></a>suspendCoroutine</h4><ul>
+<li>可处理异步回调的逻辑</li>
+</ul>
+<h4 id="suspendCancellableCoroutine"><a href="#suspendCancellableCoroutine" class="headerlink" title="suspendCancellableCoroutine"></a>suspendCancellableCoroutine</h4><ul>
 <li>可在协程被取消时收到回调 CancellableContinuation#invokeOnCancellation</li>
 </ul>
 <h4 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h4><h4 id="Flow"><a href="#Flow" class="headerlink" title="Flow"></a>Flow</h4><ul>
