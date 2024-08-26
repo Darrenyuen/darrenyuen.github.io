@@ -28,7 +28,7 @@
 <meta property="og:description" content="启动模式 DEFAULT：默认启动模式，协程会在创建后立即开始调度，如果在调度前协程被取消，其将直接进入取消响应的状态 LAZY：懒启动模式，协程被调用才会启动执行，包括调用协程的start，join或者await等方法时才会被调度，如果调度前就取消那么该协程将直接进入异常结束状态 ATOMIC：原子启动模式，立即开始调度，在执行第一个挂起点之前协程不能被取消 UNDISPATCHED：不受限的启">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-06-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-07-14T14:14:14.145Z">
+<meta property="article:modified_time" content="2024-07-16T02:36:42.702Z">
 <meta property="article:author" content="Darren Yuen">
 <meta property="article:tag" content="Kotlin">
 <meta property="article:tag" content="协程">
@@ -182,7 +182,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-07-14 22:14:14" itemprop="dateModified" datetime="2024-07-14T22:14:14+08:00">2024-07-14</time>
+                <time title="Modified: 2024-07-16 10:36:42" itemprop="dateModified" datetime="2024-07-16T10:36:42+08:00">2024-07-16</time>
               </span>
 
           
@@ -221,7 +221,7 @@
 <ol>
 <li>顶级作用域：没有父协程的协程所在的作用域为顶级作用域</li>
 <li>协同作用域：协程中启动新的协程，新协程为所在协程的子协程，这种情况下子协程所在的作用域默认为协同作用域。子协程抛出的未捕获异常都将传递给父协程处理，父协程同时也会被取消</li>
-<li>主从作用域：与协同作用域在协程的父子关系上一致，区别在于处于该作用域下的协程出现未捕获的异常时不会将异常向上传递给父协程<br>主从作用域可通过阻断子协程未捕获的异常向上传播实现</li>
+<li>主从作用域：与协同作用域在协程的父子关系上一致，区别在于处于该作用域下的协程出现未捕获的异常时不会将异常向上传递给父协程<br>主从作用域可通过阻断子协程未捕获的异常向上传播实现，如supervisorScope()</li>
 </ol>
 <p>除这三种作用域中提到的行为外，父子协程之间还存在以下规则：</p>
 <ol>
@@ -259,7 +259,10 @@
 <li>冷流：有观察者消费时才执行</li>
 <li>热流：马上执行</li>
 </ul>
-<h4 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h4>
+<h4 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h4><blockquote>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/HugMua/article/details/126044114">Kotlin协程</a></p>
+</blockquote>
+
     </div>
 
     
@@ -357,12 +360,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
