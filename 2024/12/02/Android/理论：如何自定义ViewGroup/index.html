@@ -20,19 +20,21 @@
     var CONFIG = {"hostname":"darrenyuen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Tool 抓包工具：ProxyMan https:&#x2F;&#x2F;www.1024tera.com&#x2F;chinese&#x2F;sharing&#x2F;link?surl&#x3D;kqaDbCPy7asFsujFuFDwow, 使用教程 https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_67695717&#x2F;article&#x2F;details&#x2F;125847362 镜像操作：scrcpy brew下载，命令行启用 obisidian：笔记工具，强">
+  <meta name="description" content="本文记录自定义ViewGroup实践中提炼出来的经验。  ViewGroup是啥？ViewGroup相当于一个放置View的容器，并且我们在写布局xml的时候，会告诉容器（凡是以layout为开头的属性，都是为用于告诉容器的），我们的宽度（layout_width）、高度（layout_height）、对齐方式（layout_gravity），当然还有margin等；于是乎，ViewGroup的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="日常开发技巧记录">
-<meta property="og:url" content="https://darrenyuen.github.io/2024/01/12/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:title" content="理论：如何自定义ViewGroup">
+<meta property="og:url" content="https://darrenyuen.github.io/2024/12/02/Android/%E7%90%86%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/index.html">
 <meta property="og:site_name" content="Darren Yuen">
-<meta property="og:description" content="Tool 抓包工具：ProxyMan https:&#x2F;&#x2F;www.1024tera.com&#x2F;chinese&#x2F;sharing&#x2F;link?surl&#x3D;kqaDbCPy7asFsujFuFDwow, 使用教程 https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_67695717&#x2F;article&#x2F;details&#x2F;125847362 镜像操作：scrcpy brew下载，命令行启用 obisidian：笔记工具，强">
+<meta property="og:description" content="本文记录自定义ViewGroup实践中提炼出来的经验。  ViewGroup是啥？ViewGroup相当于一个放置View的容器，并且我们在写布局xml的时候，会告诉容器（凡是以layout为开头的属性，都是为用于告诉容器的），我们的宽度（layout_width）、高度（layout_height）、对齐方式（layout_gravity），当然还有margin等；于是乎，ViewGroup的">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-01-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-12-02T07:05:18.028Z">
+<meta property="article:published_time" content="2024-12-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-12-08T12:11:23.340Z">
 <meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="View">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://darrenyuen.github.io/2024/01/12/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E8%AE%B0%E5%BD%95/">
+<link rel="canonical" href="https://darrenyuen.github.io/2024/12/02/Android/%E7%90%86%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/">
 
 
 <script id="page-configurations">
@@ -45,7 +47,7 @@
   };
 </script>
 
-  <title>日常开发技巧记录 | Darren Yuen</title>
+  <title>理论：如何自定义ViewGroup | Darren Yuen</title>
   
 
 
@@ -150,7 +152,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/01/12/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E8%AE%B0%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/12/02/Android/%E7%90%86%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -163,7 +165,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          日常开发技巧记录
+          理论：如何自定义ViewGroup
         </h1>
 
         <div class="post-meta">
@@ -173,14 +175,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2024-01-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-12T00:00:00+08:00">2024-01-12</time>
+              <time title="Created: 2024-12-02 00:00:00" itemprop="dateCreated datePublished" datetime="2024-12-02T00:00:00+08:00">2024-12-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-12-02 15:05:18" itemprop="dateModified" datetime="2024-12-02T15:05:18+08:00">2024-12-02</time>
+                <time title="Modified: 2024-12-08 20:11:23" itemprop="dateModified" datetime="2024-12-08T20:11:23+08:00">2024-12-08</time>
               </span>
 
           
@@ -194,24 +196,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Tool"><a href="#Tool" class="headerlink" title="Tool"></a>Tool</h2><ul>
-<li>抓包工具：ProxyMan <a target="_blank" rel="noopener" href="https://www.1024tera.com/chinese/sharing/link?surl=kqaDbCPy7asFsujFuFDwow">https://www.1024tera.com/chinese/sharing/link?surl=kqaDbCPy7asFsujFuFDwow</a>, 使用教程 <a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_67695717/article/details/125847362">https://blog.csdn.net/m0_67695717/article/details/125847362</a></li>
-<li>镜像操作：scrcpy brew下载，命令行启用</li>
-<li>obisidian：笔记工具，强大的插件生态</li>
-<li>android studio插件CodeLocator：快速抓取页面信息</li>
-</ul>
-<h2 id="Skill"><a href="#Skill" class="headerlink" title="Skill"></a>Skill</h2><ul>
-<li>实时导出日志：adb logcat &gt; logcat.log</li>
-<li>adb shell am start -D -n com.darrenyuen.demo&#x2F;.DemoActivity 该命令会等debug attach后才启动指定acitivity</li>
-</ul>
-<ul>
-<li>git bisect good&#x2F;bad 二分定位出问题的commit</li>
-</ul>
-<ul>
-<li>adb logcat -b crash 打印最近一次的crash堆栈</li>
-<li>hook法查清难以确认的调用链，如Bundle#put大体积数据、View#requestLayout。饿了么的lancet…</li>
-<li>日志打印方法调用链<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> stackTrace = Throwable().fillInStackTrace()</span><br><span class="line">Log.d(TAG, <span class="string">&quot;generateAndShow&quot;</span>, stackTrace)</span><br></pre></td></tr></table></figure></li>
-</ul>
+        <blockquote>
+<p>本文记录自定义ViewGroup实践中提炼出来的经验。</p>
+</blockquote>
+<h3 id="ViewGroup是啥？"><a href="#ViewGroup是啥？" class="headerlink" title="ViewGroup是啥？"></a>ViewGroup是啥？</h3><p>ViewGroup相当于一个放置View的容器，并且我们在写布局xml的时候，会告诉容器（凡是以layout为开头的属性，都是为用于告诉容器的），我们的宽度（layout_width）、高度（layout_height）、对齐方式（layout_gravity），当然还有margin等；于是乎，ViewGroup的职能为：给childView计算出建议的宽和高和测量模式 ；决定childView的位置；为什么只是建议的宽和高，而不是直接确定呢，别忘了childView宽和高可以设置为wrap_content，这样只有childView才能计算出自己的宽和高。</p>
+<p>2、View的职责是啥？<br>View的职责，根据测量模式和ViewGroup给出的建议的宽和高，计算出自己的宽和高；同时还有个更重要的职责是：在ViewGroup为其指定的区域内绘制自己的形态。</p>
+<p>3、ViewGroup和LayoutParams之间的关系？<br>大家可以回忆一下，当在LinearLayout中写childView的时候，可以写layout_gravity，layout_weight属性；在RelativeLayout中的childView有layout_centerInParent属性，却没有layout_gravity，layout_weight，这是为什么呢？这是因为每个ViewGroup需要指定一个LayoutParams，用于确定支持childView支持哪些属性，比如LinearLayout指定LinearLayout.LayoutParams等。如果大家去看LinearLayout的源码，会发现其内部定义了LinearLayout.LayoutParams，在此类中，你可以发现weight和gravity的身影。</p>
+<p>2、View的3种测量模式<br>上面提到了ViewGroup会为childView指定测量模式，下面简单介绍下三种测量模式：</p>
+<p>EXACTLY：表示设置了精确的值，一般当childView设置其宽、高为精确值、match_parent时，ViewGroup会将其设置为EXACTLY；</p>
+<p>AT_MOST：表示子布局被限制在一个最大值内，一般当childView设置其宽、高为wrap_content时，ViewGroup会将其设置为AT_MOST；</p>
+<p>UNSPECIFIED：表示子布局想要多大就多大，一般出现在AadapterView的item的heightMode中、ScrollView的childView的heightMode中；此种模式比较少见。</p>
+<p>注：上面的每一行都有一个一般，意思上述不是绝对的，对于childView的mode的设置还会和ViewGroup的测量mode有一定的关系；当然了，这是第一篇自定义ViewGroup，而且绝大部分情况都是上面的规则，所以为了通俗易懂，暂不深入讨论其他内容。</p>
+<p>3、从API角度进行浅析<br>上面叙述了ViewGroup和View的职责，下面从API角度进行浅析。</p>
+<p>View的根据ViewGroup传人的测量值和模式，对自己宽高进行确定（onMeasure中完成），然后在onDraw中完成对自己的绘制。</p>
+<p>ViewGroup需要给View传入view的测量值和模式（onMeasure中完成），而且对于此ViewGroup的父布局，自己也需要在onMeasure中完成对自己宽和高的确定。此外，需要在onLayout中完成对其childView的位置的指定。</p>
 
     </div>
 
@@ -220,6 +218,10 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/View/" rel="tag"># View</a>
+          </div>
 
         
 
@@ -227,12 +229,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/01/12/Android/Android%E6%A8%A1%E5%9D%97%E5%8C%96%E5%AE%9E%E8%B7%B5%E6%96%B9%E6%A1%88/" rel="prev" title="Android模块化实践方案">
-      <i class="fa fa-chevron-left"></i> Android模块化实践方案
+    <a href="/2024/11/24/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E3%80%8A%E8%AE%A4%E7%9F%A5%E8%A7%89%E9%86%92%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="prev" title="《认知觉醒》读书笔记">
+      <i class="fa fa-chevron-left"></i> 《认知觉醒》读书笔记
     </a></div>
       <div class="post-nav-item">
-    <a href="/2024/01/13/Android/Viewpager2+Fragment%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%91%E5%8A%A8/" rel="next" title="Viewpager2+Fragment实现无限循环滑动">
-      Viewpager2+Fragment实现无限循环滑动 <i class="fa fa-chevron-right"></i>
+    <a href="/2024/12/02/Android/%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup%20-%20%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -292,7 +294,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tool"><span class="nav-number">1.</span> <span class="nav-text">Tool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Skill"><span class="nav-number">2.</span> <span class="nav-text">Skill</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ViewGroup%E6%98%AF%E5%95%A5%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">ViewGroup是啥？</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

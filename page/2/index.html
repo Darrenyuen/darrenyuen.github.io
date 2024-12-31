@@ -145,6 +145,343 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/07/07/%E5%9B%BE%E5%83%8F/OpenGL%E5%B8%B8%E7%94%A8API%E6%89%8B%E5%86%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/07/07/%E5%9B%BE%E5%83%8F/OpenGL%E5%B8%B8%E7%94%A8API%E6%89%8B%E5%86%8C/" class="post-title-link" itemprop="url">OpenGL常用API手册</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-07-07 00:00:00 / Modified: 09:53:46" itemprop="dateCreated datePublished" datetime="2024-07-07T00:00:00+08:00">2024-07-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>(一)OpenGL函数库<br>格式：</p>
+<p>&lt;库前缀&gt;&lt;根命令&gt;&lt;可选的参数个数&gt;&lt;可选的参数类型&gt; 库前缀有 gl、glu、aux、glut、wgl、glx、agl 等等。</p>
+<p>1、核心函数库主要可以分为以下几类函数<br>(1) 绘制基本的几何图元函数。如：glBegain().</p>
+<p>(2) 矩阵操作、几何变换和投影变换的函数。如：矩阵入栈glPushMatrix(),还有矩阵的出栈、转载、相乘，此外还有几何变换函数glTranslate*()，投影变换函数glOrtho()和视口变换函数glViewport()等等。</p>
+<p>(3) 颜色、光照和材质函数。</p>
+<p>(4) 显示列表函数，主要有创建、结束、生成、删除和调用显示列表的函数glNewList（）、glEndList（）、glGenLists（）、glDeleteLists（）和glCallList（）。</p>
+<p>(5) 纹理映射函数，主要有一维和二维纹理函数，设置纹理参数、纹理环境和纹理坐标的函数glTexParameter*()、glTexEnv*()和glTetCoord*()等。</p>
+<p>(6) 特殊效果函数。</p>
+<p>(7) 选着和反馈函数。</p>
+<p>(8) 曲线与曲面的绘制函数。</p>
+<p>(9) 状态设置与查询函数。</p>
+<p>(10) 光栅化、像素函数。</p>
+<p>2、OpenGL实用库（The OpenGL Utility Library）（GLU）<br>包含有43个函数，函数名的前缀名为glu.</p>
+<p>(1) 辅助纹理贴图函数。</p>
+<p>(2) 坐标转换和投影变换函数。</p>
+<p>(3) 多边形镶嵌工具。</p>
+<p>(4)  二次曲面绘制工具。</p>
+<p>(5) 非均匀有理B样条绘制工具。</p>
+<p>(6) 错误反馈工具，获取出错信息的字符串gluErrorString()</p>
+<p>3、OpenGL辅助库（AUX）<br>  包含有31个函数，函数名前缀名为aux</p>
+<p>  这部分函数提供窗口管理、输入输出处理以及绘制一些简单的三维物体。</p>
+<p>4、OpenGL工具库（OpenGL Utility Toolkit）(GLUT)<br>  包含大约30多个函数，函数前缀名为glut，此函数由glut.dll来负责解释执行。</p>
+<p>(1) 窗口操作函数。窗口初始化、窗口大小、窗口位置等函数glutInit() glutInitDisplayMode()、glutInitWindowSize() glutInitWindowPosition()等。</p>
+<p>(2) 回调函数。响应刷新消息、键盘消息、鼠标消息、定时器函数等，GlutDisplayFunc()、glutPostRedisplay()、 glutReshapeFunc()、glutTimerFunc()、glutKeyboardFunc()、 glutMouseFunc()。</p>
+<p>(3) 创建复杂的三维物体。这些和aux库函数功能相同。如创建球体glutWireSphere().</p>
+<p>(4) 函数菜单</p>
+<p>(5) 程序运行函数 glutAttachMenu()</p>
+<p>5、16个WGL函数，专门用于OpenGL和Windows窗口系统的联接，其前缀名为wgl<br>(1) 绘制上下文函数。　wglCreateContext()、wglDeleteContext()、wglGetCurrentContent()、wglGetCurrentDC() wglDeleteContent()等。</p>
+<p>(2) 文字和文本处理函数。wglUseFontBitmaps()、wglUseFontOutlines()。</p>
+<p>(3) 覆盖层、地层和主平面处理函数。wglCopyContext()、wglCreateLayerPlane()、 wglDescribeLayerPlane()、wglReakizeLayerPlatte()等。</p>
+<p>(4) 其他函数。wglShareLists()、wglGetProcAddress()等。</p>
+<p>(二)函数库列表<br>1、OpenGL应用函数库<br>gluBeginCurve,gluEndCurve 定义一条不一至的有理的NURBS曲线<br>gluBeginPolygon,gluEndPolygon 定义一个非凸多边形<br>gluBeginSurface,gluEndSurface 定义一个NURBS曲线<br>gluBeginTrim,gluEndTrim 定义一个NURBS整理循环<br>gluBuild1Dmipmaps 建立一维多重映射<br>gluBuild2Dmipmaps 建立二维多重映射<br>gluCylinder 绘制一个圆柱<br>gluDeleteNurbsRenderer 删除一个NURBS对象<br>gluDeleQuadric 删除一个二次曲面对象<br>gluDeleteTess 删除一个镶嵌对象<br>gluDisk 绘制一个盘子<br>gluErrorString 根据OpenGL或GLU错误代码产生错误字符串<br>gluGetNutbsProperty 得到一个NURBS属性<br>gluGetString 得到一个描述GLU版本号或支持GLU扩展调用的字符串<br>gluGetTessProperty 得到一个镶嵌对象<br>gluLoadSamplingMatrices 加载NUMRBS例子和精选矩阵<br>gluLookAt 设定一个变换视点<br>gluNewNurbsRenderer 创建一个NURBS对象<br>gluNewQuadric 建立一个二次曲面对象<br>gluNewTess 建立一个镶嵌对象<br>gluNextContour 为其他轮廓的开始做标记<br>gluNurbsCallback 为NURBS对象设定一个回调<br>gluNnrbsCurve 设定一个NuRBS曲线的形状<br>gluNurbsProperty 设定一个NURBS属性<br>gluNurbsSurface 定义一个NURBS表面的形状<br>gluOrtho2D 定义一个二位正交投影矩阵<br>gluPartialDisk 绘制一个盘子的弧<br>gluPerspective 设置一个透视投影矩阵<br>gluPickMatrix 定义一个拾取区间<br>gluProject 将对象坐标映射为窗口坐标<br>gluPwlCurve 描述一个分段线性NURBS修剪曲线<br>gluQuadricCallback 为二次曲面对象定义一个回调<br>gluQuadricDrawStyle 为二次曲面设定合适的绘制风格<br>gluQuadricNormals 定义二次曲面所用的法向的种类<br>gluQuadricOrientation 定义二次曲面内部或外部方向<br>gluQuadricTexture 定义是否带二次其面做纹理帖图<br>gluScaleImage 将图象变换为任意尺寸<br>gluSphere 绘制一个球体<br>gluTessBeginContour,gluTessEndContour 划定一个边界描述<br>gluTessBeginPolygon,gluTessEndPolygon 划定一个多边形描述<br>gluTessCallback 为镶嵌对象定义一个回调<br>gluTessNormal 为一个多边行形定义法向<br>gluTessProperty 设置镶嵌对象的属性<br>gluTessVertex 定义在一个多边形上的顶点<br>gluUnProject 将窗口坐标映射为对象坐标</p>
+<p>2、OpenGL核心函数库<br>glAccum 操作累加缓冲区<br>glAddSwapHintRectWIN 定义一组被 SwapBuffers 拷贝的三角形<br>glAlphaFunc 允许设置 alpha 检测功能<br>glAreTexturesResident 决定特定的纹理对象是否常驻在纹理内存中<br>glArrayElement 定义一个被用于顶点渲染的数组成分<br>glBegin,glEnd 定义一个或一组原始的顶点<br>glBindTexture 允许建立一个绑定到目标纹理的有名称的纹理<br>glBitmap 绘制一个位图<br>glBlendFunc 特殊的像素算法<br>glCallList 执行一个显示列表<br>glCallLists 执行一列显示列表<br>glClear 用当前值清除缓冲区<br>GlClearAccum 为累加缓冲区指定用于清除的值<br>glClearColor 为色彩缓冲区指定用于清除的值<br>glClearDepth 为深度缓冲区指定用于清除的值<br>glClearStencil 为模板缓冲区指定用于清除的值<br>glClipPlane 定义被裁剪的一个平面几何体<br>glColor 设置当前色彩<br>glColorMask 允许或不允许写色彩组件帧缓冲区<br>glColorMaterial 使一个材质色彩指向当前的色彩<br>glColorPointer 定义一列色彩<br>glColorTableEXT 定义目的一个调色板纹理的调色板的格式和尺寸<br>glColorSubTableEXT 定义目的纹理的调色板的一部分被替换<br>glCopyPixels 拷贝帧缓冲区里的像素<br>glCopyTexImage1D 将像素从帧缓冲区拷贝到一个单空间纹理图象中<br>glCopyTexImage2D 将像素从帧缓冲区拷贝到一个双空间纹理图象中<br>glCopyTexSubImage1D 从帧缓冲区拷贝一个单空间纹理的子图象<br>glCopyTexSubImage2D 从帧缓冲区拷贝一个双空间纹理的子图象<br>glCullFace 定义前面或后面是否能被精选<br>glDeleteLists 删除相邻一组显示列表<br>glDeleteTextures 删除命名的纹理<br>glDepthFunc 定义用于深度缓冲区对照的数据<br>glDepthMask 允许或不允许写入深度缓冲区<br>glDepthRange 定义 z 值从标准的设备坐标映射到窗口坐标<br>glDrawArrays 定义渲染多个图元<br>glDrawBuffer 定义选择哪个色彩缓冲区被绘制<br>glDrawElements 渲染数组数据中的图元<br>glDrawPixels 将一组像素写入帧缓冲区<br>glEdgeFlag 定义一个边缘标志数组<br>glEdgeFlagPointer 定义一个边缘标志数组<br>glEnable, glDisable 打开或关闭 OpenGL 的特殊功能<br>glEnableClientState,glDisableClientState 分别打开或关闭数组<br>glEvalCoord 求解一维和二维贴图<br>glEvalMesh1,glEvalMesh2 求解一维和二维点或线的网格<br>glEvalPoint1,glEvalPoint2 生成及求解一个网格中的单点<br>glFeedbackBuffer 控制反馈模式<br>glFinish 等待直到 OpenGL 执行结束<br>glFlush 在有限的时间里强制 OpenGL 的执行<br>glFogf,glFogi,glFogfv,glFogiv 定义雾参数<br>glFrontFace 定义多边形的前面和背面<br>glFrustum 当前矩阵乘上透视矩阵<br>glGenLists 生成一组空的连续的显示列表<br>glGenTextures 生成纹理名称<br>glGetBooleanv,glGetDoublev,glGetFloatv,glGetIntegerv 返回值或所选参数值<br>glGetClipPlane 返回特定裁减面的系数<br>glGetColorTableEXT 从当前目标纹理调色板得到颜色表数据<br>glGetColorTableParameterfvEXT,glGetColorTableParameterivEXT 从颜色表中 得到调色板参数<br>glGetError 返回错误消息<br>glGetLightfv,glGetLightiv 返回光源参数值<br>glGetMapdv,glGetMapfv,glGetMapiv 返回求值程序参数<br>glGetMaterialfv,glGetMaterialiv 返回材质参数<br>glGetPixelMapfv,glGetpixelMapuiv,glGetpixelMapusv 返回特定的像素图<br>glGetPointerv 返回顶点数据数组的地址<br>glGetPolygonStipple 返回多边形的点图案<br>glGetString 返回描述当前 OpenGl 连接的字符串<br>glGetTexEnvfv 返回纹理环境参数<br>glGetTexGendv,glGetTexGenfv,glGetTexGeniv 返回纹理坐标生成参数<br>glGetTexImage 返回一个纹理图象<br>glGetTexLevelParameterfv,glGetTexLevelParameteriv 返回特定的纹理参数的 细节级别<br>glGetTexParameterfv,glGetTexParameteriv 返回纹理参数值<br>glHint 定义实现特殊的线索<br>glIndex 建立当前的色彩索引<br>glIndexMask 控制写色彩索引缓冲区里的单独位<br>glIndexPointer 定义一个颜色索引数组<br>glInitName 初始化名字堆栈<br>glInterleavedArrays 同时定义和允许几个在一个大的数组集合里的交替数组<br>glIsEnabled 定义性能是否被允许<br>glIsList 检测显示列表的存在<br>glIsTexture 确定一个名字对应一个纹理<br>glLightf,glLighti,glLightfv,glLightiv 设置光源参数<br>glLightModelf,glLightModeli,glLightModelfv,glLightModeliv 设置光线模型参数<br>glLineStipple 设定线点绘图案<br>glLineWidth 设定光栅线段的宽<br>glListBase 为 glcallList 设定显示列表的基础<br>glLoadIdentity 用恒等矩阵替换当前矩阵<br>glLoadMatrixd,glLoadMatrif 用一个任意矩阵替换当前矩阵<br>glLoadName 将一个名字调入名字堆栈<br>glLogicOp 为色彩索引渲染定义一个逻辑像素操作<br>glMap1d,glMap1f 定义一个一维求值程序<br>glMap2d,glMap2f 定义一个二维求值程序<br>glMapGrid1d,glMapGrid1f,glMapgrid2d,glMapGrid2f 定义一个一维或二维网 格<br>glMaterialf,glMateriali,glMateriafv,glMaterialiv 为光照模型定义材质参数<br>glMatrixMode 定义哪一个矩阵是当前矩阵<br>glMultMatrixd,glMultMatrixf 用当前矩阵与任意矩阵相乘<br>glNewList,glEndList 创建或替换一个显示列表<br>glNormal 设定当前顶点法向<br>glNormalPointer 设定一个法向数组<br>glOrtho 用垂直矩阵与当前矩阵相乘<br>glPassThrough 在反馈缓冲区做记号<br>glPixelMapfv,glPixelMapuiv,glPixelMapusv 设定像素交换图<br>glPixelStoref,glpixelStorei 设定像素存储模式<br>glPixelTransferf,glPixelTransferi 设定像素存储模式<br>glPixelZoom 设定像素缩放因数<br>glPointSize 设定光栅点的直径<br>glPolygonMode 选择一个多边形的光栅模式<br>glPolygonOffset 设定 OpenGL 用于计算深度值的比例和单元<br>glPolygonStipple 设定多边形填充图案<br>glPrioritizeTextures 设定纹理固定的优先级<br>glPushAttrib,glPopAttrib 属性堆栈的压入和弹出操作<br>glPushClientAttrib,glPopClientAttrib 在客户属性堆栈存储和恢复客户状态值<br>glPushmatrix,glPopMatrix 矩阵堆栈的压入和弹出操作<br>glPushName,glPopName 名字堆栈的压入和弹出操作<br>glRasterPos 定义像素操作的光栅位置<br>glreadBuffer 为像素选择一个源色彩缓冲区<br>glReadPixels 从帧缓冲区读取一组数据<br>glRectd,glRectf,glRecti,glRects,glRectdv,glRectfv,glRectiv,glRectsv 绘制一个三 角形<br>glRenderMode 定义光栅模式<br>glRotated,glRotatef 将旋转矩阵与当前矩阵相乘<br>glScaled,glScalef 将一般的比例矩阵与当前矩阵相乘<br>glScissor 定义裁减框<br>glSelectBuffer 为选择模式值建立一个缓冲区<br>glShadeModel 选择平直或平滑着色<br>glStencilFunc 为模板测试设置功能和参照值<br>glStencilMask 控制在模板面写单独的位<br>glStencilOp 设置激活模式测试<br>glTexCoord 设置当前纹理坐标<br>glTexCoordPointer 定义一个纹理坐标数组<br>glTexEnvf,glTexEnvi,glTexEnvfv,glTexEnviv 设定纹理坐标环境参数<br>glTexGend,glTexgenf,glTexGendv,glTexGenfv,glTexGeniv 控制纹理坐标的生成<br>glTexImage1D 定义一个一维的纹理图象<br>glTexImage2D 定义一个二维的纹理图<br>glTexParameterf,glTexParameteri,glTexParameterfv,glTexParameteriv 设置纹理参数<br>glTexSubImage1D 定义一个存在的一维纹理图像的一部分,但不能定义新的纹理<br>glTexSubImage2D 定义一个存在的二维纹理图像的一部分,但不能定义新的纹理<br>glTranslated,glTranslatef 将变换矩阵与当前矩阵相乘<br>glVertex 定义一个顶点<br>glVertexPointer 设定一个顶点数据数组<br>glViewport 设置视窗</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/06/23/Kotlin/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/06/23/Kotlin/Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">Kotlin 协程知识点记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-06-23 00:00:00" itemprop="dateCreated datePublished" datetime="2024-06-23T00:00:00+08:00">2024-06-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-07-16 10:36:42" itemprop="dateModified" datetime="2024-07-16T10:36:42+08:00">2024-07-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="启动模式"><a href="#启动模式" class="headerlink" title="启动模式"></a>启动模式</h3><ul>
+<li>DEFAULT：默认启动模式，协程会在创建后立即开始调度，如果在调度前协程被取消，其将直接进入取消响应的状态</li>
+<li>LAZY：懒启动模式，协程被调用才会启动执行，包括调用协程的start，join或者await等方法时才会被调度，如果调度前就取消那么该协程将直接进入异常结束状态</li>
+<li>ATOMIC：原子启动模式，立即开始调度，在执行第一个挂起点之前协程不能被取消</li>
+<li>UNDISPATCHED：不受限的启动模式，协程创建后立即在当前函数调用栈中执行，直到遇到第一个真正挂起的点才会切线程<br>立即调度：表示协程的调度器会立即接收调度指令，但具体执行的时机以及在哪个线程上执行，还需要根据调度器的具体情况而定</li>
+</ul>
+<h3 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h3><ul>
+<li>Default：默认调度器，适合处理后台计算，是一个CPU密集型任务调度器</li>
+<li>Main：UI调度器，平台相关，在Android上是主线程</li>
+<li>Unconfined：无所谓调度器，挂起点恢复执行时会在恢复所在的线程上直接执行，如A（创建协程的线程）-B（协程挂起的线程）-B（协程恢复后执行的线程）</li>
+<li>IO：IO调度器，适合执行IO相关操作，是一个IO密集型任务调度器</li>
+</ul>
+<h3 id="上下文-CoroutineContext"><a href="#上下文-CoroutineContext" class="headerlink" title="上下文 CoroutineContext"></a>上下文 CoroutineContext</h3><ul>
+<li>可通过实现AbstractCoroutineContextElement抽象类自定义上下文</li>
+<li>常用的有AndroidExceptionPreHandler、CoroutineName</li>
+<li>Job的作用，没Job实例的协程不能被取消</li>
+</ul>
+<h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><blockquote>
+<p>可作为上下文的一部分</p>
+</blockquote>
+<p>可以拦截协程异步回调时的恢复调用，即可以在挂起点恢复执行的位置添加拦截器实现AOP操作。</p>
+<h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><p>作用域的概念，主要用以明确协程之间的父子关系，以及对于取消或者异常处理等传播行为。<br>协程作用域包括以下三种：</p>
+<ol>
+<li>顶级作用域：没有父协程的协程所在的作用域为顶级作用域</li>
+<li>协同作用域：协程中启动新的协程，新协程为所在协程的子协程，这种情况下子协程所在的作用域默认为协同作用域。子协程抛出的未捕获异常都将传递给父协程处理，父协程同时也会被取消</li>
+<li>主从作用域：与协同作用域在协程的父子关系上一致，区别在于处于该作用域下的协程出现未捕获的异常时不会将异常向上传递给父协程<br>主从作用域可通过阻断子协程未捕获的异常向上传播实现，如supervisorScope()</li>
+</ol>
+<p>除这三种作用域中提到的行为外，父子协程之间还存在以下规则：</p>
+<ol>
+<li>父协程被取消，所有子协程均被取消</li>
+<li>父协程需要等待子协程执行完毕之后才能最终进入完成状态</li>
+<li>子协程会继承父协程的协程上下文中的元素，如果自身有相同的key成员，则覆盖父协程对应的key，覆盖效果仅限子协程作用域</li>
+</ol>
+<h3 id="启动协程的方式"><a href="#启动协程的方式" class="headerlink" title="启动协程的方式"></a>启动协程的方式</h3><h4 id="launch"><a href="#launch" class="headerlink" title="launch"></a>launch</h4><ul>
+<li>返回Job对象，但无法获取协程运行结果</li>
+</ul>
+<h4 id="async"><a href="#async" class="headerlink" title="async"></a>async</h4><ul>
+<li>返回Deffer对象，可以获取协程运行结果</li>
+</ul>
+<p>Deffer中await()方法的作用：</p>
+<ul>
+<li>在协程已经执行完成时，立即返回协程执行的结果，如果协程异常结束，则抛出异常</li>
+<li>如果协程尚未执行完成，则挂起直到协程执行完成，与join类似</li>
+</ul>
+<h3 id="挂起与恢复"><a href="#挂起与恢复" class="headerlink" title="挂起与恢复"></a>挂起与恢复</h3><blockquote>
+<p>挂起的本质是程序执行流程发生异步调用时，当前调用流程的执行状态进入等待状态。<br>异步调用发生与否，取决于恢复调用函数与对应的挂起函数的调用是否在相同的调用栈上，切换函数调用栈的方法可以是切换到其他线程上执行，也可以是不切换线程但在当前函数返回之后的某一个时刻再执行。</p>
+</blockquote>
+<ul>
+<li>协程内部挂起函数的调用处被称为挂起点，挂起点出现异步调用则当前协程被挂起，直到对应的Continuation的恢复调用函数被调用才会恢复执行</li>
+<li>挂起标记 - return非阻塞式挂起当前线程</li>
+<li>invokeSuspend、resume - 恢复调用</li>
+</ul>
+<p>挂起的本质</p>
+<h3 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h3><h4 id="suspendCoroutine"><a href="#suspendCoroutine" class="headerlink" title="suspendCoroutine"></a>suspendCoroutine</h4><ul>
+<li>可处理异步回调的逻辑</li>
+</ul>
+<h4 id="suspendCancellableCoroutine"><a href="#suspendCancellableCoroutine" class="headerlink" title="suspendCancellableCoroutine"></a>suspendCancellableCoroutine</h4><ul>
+<li>可在协程被取消时收到回调 CancellableContinuation#invokeOnCancellation</li>
+</ul>
+<h4 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h4><h4 id="Flow"><a href="#Flow" class="headerlink" title="Flow"></a>Flow</h4><ul>
+<li>冷流：有观察者消费时才执行</li>
+<li>热流：马上执行</li>
+</ul>
+<h4 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h4><blockquote>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/HugMua/article/details/126044114">Kotlin协程</a></p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/05/16/%E6%9E%81%E5%AE%A2/WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/" class="post-title-link" itemprop="url">WebP压缩工具建设</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-05-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-16T00:00:00+08:00">2024-05-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-05-18 15:12:35" itemprop="dateModified" datetime="2024-05-18T15:12:35+08:00">2024-05-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="与其他图片格式对比"><a href="#与其他图片格式对比" class="headerlink" title="与其他图片格式对比"></a>与其他图片格式对比</h2><p>WebP是一种由Google开发的现代图像格式，旨在提供更高的压缩率和更好的图像质量，同时保持与现有图像格式相似的视觉质量。与传统的JPEG、PNG和GIF格式相比，WebP具有以下优缺点：</p>
+<p>优点：</p>
+<ol>
+<li>更高的压缩率：WebP通常比JPEG格式具有更高的压缩率，可以减小图像文件的大小，加快网页加载速度。</li>
+<li>更好的图像质量：相同文件大小下，WebP格式的图像质量通常比JPEG更好，可以减少图像的失真。</li>
+<li>支持透明度：WebP格式支持透明度，可以创建带有半透明效果的图像，而JPEG不支持透明度。</li>
+<li>动态图像支持：WebP格式支持动态图像，可以替代GIF格式，提供更高的压缩率和更好的图像质量。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>兼容性：WebP格式相对较新，不是所有的浏览器和应用程序都支持该格式，可能会导致兼容性问题。</li>
+<li>编解码速度：WebP格式的编解码速度可能比JPEG和PNG慢一些，特别是在处理大型图像时。</li>
+<li>动态图像性能：虽然WebP支持动态图像，但在某些情况下可能性能不如GIF格式。</li>
+</ol>
+<p>总的来说，WebP格式在压缩率和图像质量方面有优势，特别适合用于网页图像的优化。但在一些特定情况下，如兼容性和动态图像性能方面可能存在一些缺点。</p>
+<h2 id="压缩处理"><a href="#压缩处理" class="headerlink" title="压缩处理"></a>压缩处理</h2><p>生成WebP图像通常使用Google的官方工具cwebp命令行工具或libwebp C库。<br>cwebp支持许多参数来控制输出的WebP图像的质量和大小。以下是一些常用的参数：</p>
+<ul>
+<li><strong><code>-q &lt;float&gt;</code>：设置输出的图像质量，范围是0（最差）到100（最好）。默认值是75。</strong></li>
+<li><strong><code>-r</code>: 帧率</strong></li>
+<li><code>-m &lt;int&gt;</code>：设置压缩效率，范围是0（最快）到6（最慢）。更高的值会产生更小但需要更长时间来编码的文件。默认值是4。</li>
+<li><code>-lossless</code>：生成无损的WebP图像。</li>
+<li><code>-alpha_q &lt;int&gt;</code>：设置透明度通道的质量。更低的值会产生更小的文件但透明度质量更差。</li>
+<li><code>-resize &lt;width&gt; &lt;height&gt;</code>：改变图像的大小到指定的宽度和高度。</li>
+<li><code>-o &lt;file&gt;</code>：指定输出文件的名称。</li>
+<li><code>-v</code>：显示详细的编码信息。</li>
+<li><code>-h</code>：显示帮助信息。</li>
+</ul>
+<p>例如，以下命令将JPEG图像转换为质量为80的WebP图像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cwebp -q 80 input.jpg -o output.webp</span><br></pre></td></tr></table></figure>
+
+<p>注意，cwebp的所有参数都是可选的。如果你不提供任何参数，cwebp将使用默认的设置来生成WebP图像。</p>
+<p>另外，ffmpeg中也集成了cwebp，可以通过以下命令将视频文件转换成WebP图像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -vcodec libwebp -vf scale=480:640 -lossless 0 -loop 0 -r 9 -q 8 output.webp</span><br></pre></td></tr></table></figure>
+
+<h2 id="实践应用"><a href="#实践应用" class="headerlink" title="实践应用"></a>实践应用</h2><blockquote>
+<p>背景：线上能将视频文件转成webp动图的工具的转换过程对用户来说都是一个黑盒操作，我们在使用的时候无法控制转换的参数，如转换的帧率、质量等等，这导致有时得到的webp动图不合期望，故这里开发了一个将视频文件转换成webp动图的mac桌面版工具。</p>
+</blockquote>
+<p><strong>项目链接</strong><br><a target="_blank" rel="noopener" href="https://github.com/Darrenyuen/WebPTransTool">https://github.com/Darrenyuen/WebPTransTool</a></p>
+<p><strong>相关技术</strong></p>
+<ul>
+<li>KMP：开发桌面工具</li>
+<li>集成ffmep可执行文件：其中集成的cwebp提供了转换能力</li>
+</ul>
+<p><strong>效果展示</strong></p>
+<ol>
+<li><p>导入需要转换的原始视频，目前仅支持mp4文件和mov文件<br><img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_1.png"></p>
+</li>
+<li><p>导入后会弹出配置选择弹窗，默认配置是帧率为9、质量为8、使用旧编解码器，转换耗时长与视频大小及配置有关<br>!<img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_2.png"></p>
+</li>
+<li><p>转换完成后可以看到<br><img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_3.png"></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/03/21/Android/%E8%A7%A3%E7%AD%94ViewModel%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%96%91%E6%83%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -617,7 +954,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-09-23 15:02:49" itemprop="dateModified" datetime="2024-09-23T15:02:49+08:00">2024-09-23</time>
+                <time title="Modified: 2024-12-02 15:05:18" itemprop="dateModified" datetime="2024-12-02T15:05:18+08:00">2024-12-02</time>
               </span>
 
           
@@ -647,6 +984,7 @@
 <ul>
 <li>adb logcat -b crash 打印最近一次的crash堆栈</li>
 <li>hook法查清难以确认的调用链，如Bundle#put大体积数据、View#requestLayout。饿了么的lancet…</li>
+<li>日志打印方法调用链<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> stackTrace = Throwable().fillInStackTrace()</span><br><span class="line">Log.d(TAG, <span class="string">&quot;generateAndShow&quot;</span>, stackTrace)</span><br></pre></td></tr></table></figure></li>
 </ul>
 
       
@@ -912,7 +1250,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
