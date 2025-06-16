@@ -272,10 +272,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2025-03-13 00:00:00 / Modified: 10:30:35" itemprop="dateCreated datePublished" datetime="2025-03-13T00:00:00+08:00">2025-03-13</time>
+              <time title="Created: 2025-03-13 00:00:00" itemprop="dateCreated datePublished" datetime="2025-03-13T00:00:00+08:00">2025-03-13</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-06-16 21:04:00" itemprop="dateModified" datetime="2025-06-16T21:04:00+08:00">2025-06-16</time>
+              </span>
 
           
 
@@ -288,7 +294,49 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h3 id="结构化并发"><a href="#结构化并发" class="headerlink" title="结构化并发"></a>结构化并发</h3><p>让我们先将思路转为日常业务开发中，比如在某某业务中，可能存在好几个需要同时处理的逻辑，比如同时请求两个网络接口，同时操作两个子任务等。我们暂且称上述学术化概念为 多个并发操作。  </p>
+<p>而每个并发操作其实都是在处理一个单独的任务，这个任务中，可能还存在子任务 ; 同样对于这个子任务来说，它又是其父任务的子单元。每个任务都有自己的生命周期，子任务的生命周期会继承父任务的生命周期，比如如果父任务关闭，子任务也会被取消。而如果满足这样特性，我们就称其就是 结构化并发。</p>
+<h3 id="异常传递流程"><a href="#异常传递流程" class="headerlink" title="异常传递流程"></a>异常传递流程</h3><p>默认情况下，任意一个协程发生异常时都会影响到整个协程树，而异常的传递通常是双向的，也即协程会向子协程与父协程共同传递。</p>
+<p>整体流程如下：</p>
+<ol>
+<li>先 cancel 子协程</li>
+<li>取消自己</li>
+<li>将异常传递给父协程</li>
+<li>(重复上述过程,直到根协程关闭)</li>
+</ol>
+<h3 id="异常传递形式"><a href="#异常传递形式" class="headerlink" title="异常传递形式"></a>异常传递形式</h3><ul>
+<li><p>launch : 层层向上传递，在launch外部try-catch无效  </p>
+</li>
+<li><p>async : 根协程启动或加SupervisorJob启动，会优先当前暴露，可在await()捕获；否则会将异常传递给父协程，导致异常没有在调用处暴露。</p>
+</li>
+</ul>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p><strong>是否是根协程启动</strong>  </p>
+<p><strong>async + 是否是根协程启动</strong></p>
+<ul>
+<li>async 时内部也是新的作用域，如果 async 对应的是根协程，那么我们可以在 await() 时直接捕获异常  </li>
+<li>async 时如果不是根协程启动，则会将异常传递给父协程，导致异常没有在调用处暴露。可以在async时声明SupervisorJob，此时即可在 await() 时捕获异常</li>
+</ul>
+<p><strong>launch + 是否是根或父协程自带异常处理器</strong></p>
+<ul>
+<li>在launch外部try-catch无用</li>
+<li>launch自带的异常处理器不会处理当前协程发生的异常</li>
+</ul>
+<h3 id="SupervisorJob"><a href="#SupervisorJob" class="headerlink" title="SupervisorJob"></a>SupervisorJob</h3><p>根协程自带的SupervisorJob，子协程会继承  </p>
+<p>非根协程的父协程声明的SupervisorJob，子协程不会继承： 子协程在 launch 时会创建新的协程作用域，其会使用默认新的 Job 替代父协程传递 SupervisorJob ,  </p>
+<p>所以导致我们传递的 SupervisorJob 被覆盖。所以如果我们想让子协程不影响父协程或者其他子协程，此时就必须再显示添加 SupervisorJob。  </p>
+<h3 id="场景实践"><a href="#场景实践" class="headerlink" title="场景实践"></a>场景实践</h3><p><strong>严格意义上来说，所有异常都可以用 tryCatch 去处理</strong>  </p>
+<p>严格意义上来说，所有异常都可以用 tryCatch 去处理，只要我们的处理位置得当。但这并不是所有方式的最优解，特别是如果你想更优雅的处理异常时，此时就可以考虑 CoroutineExceptionHandler 。  </p>
+<p><strong>什么时候该用 SupervisorJob ，什么时候该用 Job?</strong>  </p>
+<p>引用官方的一句话就是：想要避免取消操作在异常发生时被传播，记得使用 SupervisorJob ；反之则使用 Job。  </p>
+<p><strong>SupervisorJob + tryCatch</strong>  </p>
+<p>我们有两个接口 A,B 需要同时请求，当接口A异常时，需要不影响B接口的正常展示，当接口B异常时，此时界面展示异常信息  </p>
+<p><strong>SupervisorJob + CoroutineExceptionHandler</strong>  </p>
+<p>如果你有一个顶级协程，并且需要自动捕获所有的异常，则此时可以选用上述方式</p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7130132604568731655#heading-1">Kotlin | 关于协程异常处理，你想知道的都在这里</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Darrenyuen/WorkDemo/tree/master/coroutine/src/main/java/com/darrenyuen/coroutine/execption/practice">实践例子可见代码仓库</a></li>
+</ul>
+
       
     </div>
 
