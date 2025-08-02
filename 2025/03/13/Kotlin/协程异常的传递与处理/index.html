@@ -28,7 +28,7 @@
 <meta property="og:description" content="结构化并发让我们先将思路转为日常业务开发中，比如在某某业务中，可能存在好几个需要同时处理的逻辑，比如同时请求两个网络接口，同时操作两个子任务等。我们暂且称上述学术化概念为 多个并发操作。   而每个并发操作其实都是在处理一个单独的任务，这个任务中，可能还存在子任务 ; 同样对于这个子任务来说，它又是其父任务的子单元。每个任务都有自己的生命周期，子任务的生命周期会继承父任务的生命周期，比如如果父任务">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-03-12T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-06-16T13:04:00.593Z">
+<meta property="article:modified_time" content="2025-06-17T02:22:39.851Z">
 <meta property="article:author" content="Darren Yuen">
 <meta property="article:tag" content="Kotlin">
 <meta property="article:tag" content="协程">
@@ -182,7 +182,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-06-16 21:04:00" itemprop="dateModified" datetime="2025-06-16T21:04:00+08:00">2025-06-16</time>
+                <time title="Modified: 2025-06-17 10:22:39" itemprop="dateModified" datetime="2025-06-17T10:22:39+08:00">2025-06-17</time>
               </span>
 
           
@@ -215,13 +215,13 @@
 <h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p><strong>是否是根协程启动</strong>  </p>
 <p><strong>async + 是否是根协程启动</strong></p>
 <ul>
-<li>async 时内部也是新的作用域，如果 async 对应的是根协程，那么我们可以在 await() 时直接捕获异常  </li>
+<li>async 时内部也是新的作用域，如果 async 对应的是根协程（<code>scope.async</code>），那么我们可以在 await() 时直接捕获异常  </li>
 <li>async 时如果不是根协程启动，则会将异常传递给父协程，导致异常没有在调用处暴露。可以在async时声明SupervisorJob，此时即可在 await() 时捕获异常</li>
 </ul>
 <p><strong>launch + 是否是根或父协程自带异常处理器</strong></p>
 <ul>
 <li>在launch外部try-catch无用</li>
-<li>launch自带的异常处理器不会处理当前协程发生的异常</li>
+<li>launch自带的异常处理器不会处理当前协程发生的异常，除非当前协程显式添加SupervisorJob</li>
 </ul>
 <h3 id="SupervisorJob"><a href="#SupervisorJob" class="headerlink" title="SupervisorJob"></a>SupervisorJob</h3><p>根协程自带的SupervisorJob，子协程会继承  </p>
 <p>非根协程的父协程声明的SupervisorJob，子协程不会继承： 子协程在 launch 时会创建新的协程作用域，其会使用默认新的 Job 替代父协程传递 SupervisorJob ,  </p>
@@ -336,12 +336,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>

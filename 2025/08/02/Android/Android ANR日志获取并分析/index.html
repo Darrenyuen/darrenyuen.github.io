@@ -20,19 +20,20 @@
     var CONFIG = {"hostname":"darrenyuen.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Tool 抓包工具：ProxyMan https:&#x2F;&#x2F;www.1024tera.com&#x2F;chinese&#x2F;sharing&#x2F;link?surl&#x3D;kqaDbCPy7asFsujFuFDwow, 使用教程 https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_67695717&#x2F;article&#x2F;details&#x2F;125847362 镜像操作：scrcpy brew下载，命令行启用 obisidian：笔记工具，强">
+  <meta name="description" content="获取trace文件1、获取ANR日志 adb bugreport，导出trace文件，分析trace, pid, tid 2、解压日志后&#x2F;data&#x2F;anr路径下根据发生时间选择对应文件 3、—– pid 17172 at 2025-07-08 15:53:02 —– 根据当前pid分析出17172进程出现问题并且记录发生时间 分析ANR 通过进程ID17172搜索定位到  12">
 <meta property="og:type" content="article">
-<meta property="og:title" content="日常开发技巧记录">
-<meta property="og:url" content="https://darrenyuen.github.io/2024/01/12/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:title" content="Android ANR日志获取并分析">
+<meta property="og:url" content="https://darrenyuen.github.io/2025/08/02/Android/Android%20ANR%E6%97%A5%E5%BF%97%E8%8E%B7%E5%8F%96%E5%B9%B6%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Darren Yuen">
-<meta property="og:description" content="Tool 抓包工具：ProxyMan https:&#x2F;&#x2F;www.1024tera.com&#x2F;chinese&#x2F;sharing&#x2F;link?surl&#x3D;kqaDbCPy7asFsujFuFDwow, 使用教程 https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_67695717&#x2F;article&#x2F;details&#x2F;125847362 镜像操作：scrcpy brew下载，命令行启用 obisidian：笔记工具，强">
+<meta property="og:description" content="获取trace文件1、获取ANR日志 adb bugreport，导出trace文件，分析trace, pid, tid 2、解压日志后&#x2F;data&#x2F;anr路径下根据发生时间选择对应文件 3、—– pid 17172 at 2025-07-08 15:53:02 —– 根据当前pid分析出17172进程出现问题并且记录发生时间 分析ANR 通过进程ID17172搜索定位到  12">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-01-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-12-02T07:05:18.028Z">
+<meta property="article:published_time" content="2025-08-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-08-02T07:14:19.265Z">
 <meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://darrenyuen.github.io/2024/01/12/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E8%AE%B0%E5%BD%95/">
+<link rel="canonical" href="https://darrenyuen.github.io/2025/08/02/Android/Android%20ANR%E6%97%A5%E5%BF%97%E8%8E%B7%E5%8F%96%E5%B9%B6%E5%88%86%E6%9E%90/">
 
 
 <script id="page-configurations">
@@ -45,7 +46,7 @@
   };
 </script>
 
-  <title>日常开发技巧记录 | Darren Yuen</title>
+  <title>Android ANR日志获取并分析 | Darren Yuen</title>
   
 
 
@@ -150,7 +151,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/01/12/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E8%AE%B0%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2025/08/02/Android/Android%20ANR%E6%97%A5%E5%BF%97%E8%8E%B7%E5%8F%96%E5%B9%B6%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -163,7 +164,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          日常开发技巧记录
+          Android ANR日志获取并分析
         </h1>
 
         <div class="post-meta">
@@ -172,16 +173,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2024-01-12 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-12T00:00:00+08:00">2024-01-12</time>
+              <time title="Created: 2025-08-02 00:00:00 / Modified: 15:14:19" itemprop="dateCreated datePublished" datetime="2025-08-02T00:00:00+08:00">2025-08-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-12-02 15:05:18" itemprop="dateModified" datetime="2024-12-02T15:05:18+08:00">2024-12-02</time>
-              </span>
 
           
 
@@ -194,24 +189,55 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Tool"><a href="#Tool" class="headerlink" title="Tool"></a>Tool</h2><ul>
-<li>抓包工具：ProxyMan <a target="_blank" rel="noopener" href="https://www.1024tera.com/chinese/sharing/link?surl=kqaDbCPy7asFsujFuFDwow">https://www.1024tera.com/chinese/sharing/link?surl=kqaDbCPy7asFsujFuFDwow</a>, 使用教程 <a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_67695717/article/details/125847362">https://blog.csdn.net/m0_67695717/article/details/125847362</a></li>
-<li>镜像操作：scrcpy brew下载，命令行启用</li>
-<li>obisidian：笔记工具，强大的插件生态</li>
-<li>android studio插件CodeLocator：快速抓取页面信息</li>
-</ul>
-<h2 id="Skill"><a href="#Skill" class="headerlink" title="Skill"></a>Skill</h2><ul>
-<li>实时导出日志：adb logcat &gt; logcat.log</li>
-<li>adb shell am start -D -n com.darrenyuen.demo&#x2F;.DemoActivity 该命令会等debug attach后才启动指定acitivity</li>
-</ul>
-<ul>
-<li>git bisect good&#x2F;bad 二分定位出问题的commit</li>
-</ul>
-<ul>
-<li>adb logcat -b crash 打印最近一次的crash堆栈</li>
-<li>hook法查清难以确认的调用链，如Bundle#put大体积数据、View#requestLayout。饿了么的lancet…</li>
-<li>日志打印方法调用链<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> stackTrace = Throwable().fillInStackTrace()</span><br><span class="line">Log.d(TAG, <span class="string">&quot;generateAndShow&quot;</span>, stackTrace)</span><br></pre></td></tr></table></figure></li>
-</ul>
+        <h2 id="获取trace文件"><a href="#获取trace文件" class="headerlink" title="获取trace文件"></a>获取trace文件</h2><p>1、获取ANR日志 adb bugreport，导出trace文件，分析trace, pid, tid</p>
+<p>2、解压日志后&#x2F;data&#x2F;anr路径下根据发生时间选择对应文件</p>
+<p>3、—– pid 17172 at 2025-07-08 15:53:02 —–</p>
+<p>根据当前pid分析出17172进程出现问题并且记录发生时间</p>
+<h2 id="分析ANR"><a href="#分析ANR" class="headerlink" title="分析ANR"></a>分析ANR</h2><ol>
+<li>通过进程ID17172搜索定位到</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&quot;main&quot; prio=5 tid=1 Native </span><br><span class="line">| group=&quot;main&quot; sCount=1 dsCount=0 flags=1 obj=0x7261bba8 self=0x7e35a97c00 </span><br><span class="line">| sysTid=17472 nice=-10 cgrp=default sched=0/0 handle=0x7e37005ed0 </span><br><span class="line">| state=S schedstat=( 13473368664 317028758 13398 ) utm=1066 stm=281 core=5 HZ=100 </span><br><span class="line">| stack=0x7fdb9c2000-0x7fdb9c4000 stackSize=8192KB </span><br><span class="line">| held mutexes=</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>解释字段含义<br>“main” prio&#x3D;5 tid&#x3D;1 Native<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;main&quot;：线程名称（主线程）。 </span><br><span class="line">prio=5：线程优先级（5 是默认优先级，范围 1~10，值越大优先级越高）。 </span><br><span class="line">tid=1：线程 ID（1 通常是主线程）。 </span><br><span class="line">Native：线程当前在执行 本地代码（JNI/NDK），而非 Java/Kotlin 代码。</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>group&#x3D;”main” sCount&#x3D;1 dsCount&#x3D;0 flags&#x3D;1 obj&#x3D;0x7261bba8 self&#x3D;0x7e35a97c00</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">group=&quot;main&quot;：线程所属组（主线程组）。 </span><br><span class="line">sCount=1：线程被挂起（suspend）的次数。</span><br><span class="line">dsCount=0：调试器挂起次数（0 表示未被调试器暂停）。 </span><br><span class="line">flags=1：线程状态标志（1 通常表示线程处于活跃状态）。 </span><br><span class="line">obj=0x7261bba8：线程关联的 Java 对象地址。 </span><br><span class="line">self=0x7e35a97c00：线程本身的 Native 地址。</span><br></pre></td></tr></table></figure>
+
+<p>sysTid&#x3D;17172 nice&#x3D;-10 cgrp&#x3D;default sched&#x3D;0&#x2F;0 handle&#x3D;0x7e37005ed0</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sysTid=17172：系统级线程 ID（与 ps -t 命令看到的 ID 一致）。 </span><br><span class="line">nice=-10：线程的调度优先级（-20~19，值越小优先级越高，0 是默认值）。 </span><br><span class="line">cgrp=default：线程所属的 CPU 调度组（默认组）。 </span><br><span class="line">sched=0/0：调度策略（0 表示 SCHED_NORMAL，即普通优先级）。 </span><br><span class="line">handle=0x7e37005ed0：线程句柄的内存地址。</span><br></pre></td></tr></table></figure>
+
+<p>state&#x3D;S schedstat&#x3D;( 13473368664 317028758 13398 ) utm&#x3D;1066 stm&#x3D;281 core&#x3D;5 HZ&#x3D;100</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">state=S：线程当前状态（S 表示休眠/Sleeping，其他常见状态：R=运行中，D=不可中断休眠）。 </span><br><span class="line">schedstat=( 13473368664 317028758 13398 )：调度统计信息，格式为 (运行时间ns, 等待时间ns, 执行次数)。 </span><br><span class="line">utm=1066 stm=281：线程在用户态（utm）和内核态（stm）的累计运行时间（单位：jiffies，1 jiffy=10ms）。 </span><br><span class="line">core=5：线程最后运行的 CPU 核心编号。 </span><br><span class="line">HZ=100：系统时钟频率（100 表示每秒 100 次 tick）。</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>当前值</th>
+<th>正常参考值</th>
+<th>问题指示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nice</td>
+<td>-10</td>
+<td>0</td>
+<td>异常提高优先级，需审查代码</td>
+</tr>
+<tr>
+<td>schedstat</td>
+<td>13.47秒运行</td>
+<td>&lt;100ms</td>
+<td>主线程重度占用 CPU</td>
+</tr>
+<tr>
+<td>utm&#x2F;stm</td>
+<td>10.66s&#x2F;2.81s</td>
+<td>&lt;1s</td>
+<td>存在未异步化的耗时任务</td>
+</tr>
+</tbody></table>
 
     </div>
 
@@ -220,6 +246,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" rel="tag"># 问题排查</a>
+          </div>
 
         
 
@@ -227,13 +256,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/01/12/Android/Android%E6%A8%A1%E5%9D%97%E5%8C%96%E5%AE%9E%E8%B7%B5%E6%96%B9%E6%A1%88/" rel="prev" title="Android模块化实践方案">
-      <i class="fa fa-chevron-left"></i> Android模块化实践方案
+    <a href="/2025/06/29/%E6%9E%81%E5%AE%A2/%E6%9D%8E%E8%B7%B3%E8%B7%B3%20-%20%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/01/13/Android/Viewpager2+Fragment%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%91%E5%8A%A8/" rel="next" title="Viewpager2+Fragment实现无限循环滑动">
-      Viewpager2+Fragment实现无限循环滑动 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -292,7 +318,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tool"><span class="nav-number">1.</span> <span class="nav-text">Tool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Skill"><span class="nav-number">2.</span> <span class="nav-text">Skill</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96trace%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">获取trace文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90ANR"><span class="nav-number">2.</span> <span class="nav-text">分析ANR</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
