@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"darrenyuen.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="与其他图片格式对比WebP是一种由Google开发的现代图像格式，旨在提供更高的压缩率和更好的图像质量，同时保持与现有图像格式相似的视觉质量。与传统的JPEG、PNG和GIF格式相比，WebP具有以下优缺点： 优点：  更高的压缩率：WebP通常比JPEG格式具有更高的压缩率，可以减小图像文件的大小，加快网页加载速度。  更好的图像质量：相同文件大小下，WebP格式的图像质量通常比JPEG更好，可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebP压缩工具建设">
+<meta property="og:url" content="https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/2024-05-16-WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/index.html">
+<meta property="og:site_name" content="Darren Yuen">
+<meta property="og:description" content="与其他图片格式对比WebP是一种由Google开发的现代图像格式，旨在提供更高的压缩率和更好的图像质量，同时保持与现有图像格式相似的视觉质量。与传统的JPEG、PNG和GIF格式相比，WebP具有以下优缺点： 优点：  更高的压缩率：WebP通常比JPEG格式具有更高的压缩率，可以减小图像文件的大小，加快网页加载速度。  更好的图像质量：相同文件大小下，WebP格式的图像质量通常比JPEG更好，可">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_3.png">
+<meta property="article:published_time" content="2024-05-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-30T01:48:30.802Z">
+<meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="KMP">
+<meta property="article:tag" content="image">
+<meta property="article:tag" content="webp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_1.png">
+
+
+<link rel="canonical" href="https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/2024-05-16-WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/2024-05-16-WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/","path":"2024/05/16/极客/2024-05-16-WebP压缩工具建设/","title":"WebP压缩工具建设"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WebP压缩工具建设 | Darren Yuen</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Darren Yuen</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E4%BB%96%E5%9B%BE%E7%89%87%E6%A0%BC%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">1.</span> <span class="nav-text">与其他图片格式对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%A4%84%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">压缩处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">实践应用</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Darren Yuen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/05/16/%E6%9E%81%E5%AE%A2/2024-05-16-WebP%E5%8E%8B%E7%BC%A9%E5%B7%A5%E5%85%B7%E5%BB%BA%E8%AE%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WebP压缩工具建设 | Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WebP压缩工具建设
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-05-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-16T00:00:00+08:00">2024-05-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-30 09:48:30" itemprop="dateModified" datetime="2026-05-30T09:48:30+08:00">2026-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9E%81%E5%AE%A2/" itemprop="url" rel="index"><span itemprop="name">极客</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="与其他图片格式对比"><a href="#与其他图片格式对比" class="headerlink" title="与其他图片格式对比"></a>与其他图片格式对比</h2><p>WebP是一种由Google开发的现代图像格式，旨在提供更高的压缩率和更好的图像质量，同时保持与现有图像格式相似的视觉质量。与传统的JPEG、PNG和GIF格式相比，WebP具有以下优缺点：</p>
+<p>优点：</p>
+<ol>
+<li><p>更高的压缩率：WebP通常比JPEG格式具有更高的压缩率，可以减小图像文件的大小，加快网页加载速度。</p>
+</li>
+<li><p>更好的图像质量：相同文件大小下，WebP格式的图像质量通常比JPEG更好，可以减少图像的失真。</p>
+</li>
+<li><p>支持透明度：WebP格式支持透明度，可以创建带有半透明效果的图像，而JPEG不支持透明度。</p>
+</li>
+<li><p>动态图像支持：WebP格式支持动态图像，可以替代GIF格式，提供更高的压缩率和更好的图像质量。</p>
+</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><p>兼容性：WebP格式相对较新，不是所有的浏览器和应用程序都支持该格式，可能会导致兼容性问题。</p>
+</li>
+<li><p>编解码速度：WebP格式的编解码速度可能比JPEG和PNG慢一些，特别是在处理大型图像时。</p>
+</li>
+<li><p>动态图像性能：虽然WebP支持动态图像，但在某些情况下可能性能不如GIF格式。</p>
+</li>
+</ol>
+<p>总的来说，WebP格式在压缩率和图像质量方面有优势，特别适合用于网页图像的优化。但在一些特定情况下，如兼容性和动态图像性能方面可能存在一些缺点。</p>
+<h2 id="压缩处理"><a href="#压缩处理" class="headerlink" title="压缩处理"></a>压缩处理</h2><p>生成WebP图像通常使用Google的官方工具cwebp命令行工具或libwebp C库。<br>cwebp支持许多参数来控制输出的WebP图像的质量和大小。以下是一些常用的参数：</p>
+<ul>
+<li><p><strong><code>-q &lt;float&gt;</code>：设置输出的图像质量，范围是0（最差）到100（最好）。默认值是75。</strong></p>
+</li>
+<li><p><strong><code>-r</code>: 帧率</strong></p>
+</li>
+<li><p><code>-m &lt;int&gt;</code>：设置压缩效率，范围是0（最快）到6（最慢）。更高的值会产生更小但需要更长时间来编码的文件。默认值是4。</p>
+</li>
+<li><p><code>-lossless</code>：生成无损的WebP图像。</p>
+</li>
+<li><p><code>-alpha_q &lt;int&gt;</code>：设置透明度通道的质量。更低的值会产生更小的文件但透明度质量更差。</p>
+</li>
+<li><p><code>-resize &lt;width&gt; &lt;height&gt;</code>：改变图像的大小到指定的宽度和高度。</p>
+</li>
+<li><p><code>-o &lt;file&gt;</code>：指定输出文件的名称。</p>
+</li>
+<li><p><code>-v</code>：显示详细的编码信息。</p>
+</li>
+<li><p><code>-h</code>：显示帮助信息。</p>
+</li>
+</ul>
+<p>例如，以下命令将JPEG图像转换为质量为80的WebP图像：</p>
+<p>| </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cwebp -q 80 input.jpg -o output.webp</span><br></pre></td></tr></table></figure>
+
+<p> |</p>
+<p>注意，cwebp的所有参数都是可选的。如果你不提供任何参数，cwebp将使用默认的设置来生成WebP图像。</p>
+<p>另外，ffmpeg中也集成了cwebp，可以通过以下命令将视频文件转换成WebP图像：</p>
+<p>| </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -vcodec libwebp -vf scale=480:640 -lossless 0 -loop 0 -r 9 -q 8 output.webp</span><br></pre></td></tr></table></figure>
+
+<p> |</p>
+<h2 id="实践应用"><a href="#实践应用" class="headerlink" title="实践应用"></a>实践应用</h2><blockquote>
+</blockquote>
+<p>背景：线上能将视频文件转成webp动图的工具的转换过程对用户来说都是一个黑盒操作，我们在使用的时候无法控制转换的参数，如转换的帧率、质量等等，这导致有时得到的webp动图不合期望，故这里开发了一个将视频文件转换成webp动图的mac桌面版工具。</p>
+<p><strong>项目链接</strong><br><a target="_blank" rel="noopener" href="https://github.com/Darrenyuen/WebPTransTool">https://github.com/Darrenyuen/WebPTransTool</a></p>
+<p><strong>相关技术</strong></p>
+<ul>
+<li><p>KMP：开发桌面工具</p>
+</li>
+<li><p>集成ffmep可执行文件：其中集成的cwebp提供了转换能力</p>
+</li>
+</ul>
+<p><strong>效果展示</strong></p>
+<p>1. </p>
+<p>导入需要转换的原始视频，目前仅支持mp4文件和mov文件<br><img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_1.png"></p>
+<p>2. </p>
+<p>导入后会弹出配置选择弹窗，默认配置是帧率为9、质量为8、使用旧编解码器，转换耗时长与视频大小及配置有关<br>!<img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_2.png"></p>
+<p>3. </p>
+<p>转换完成后可以看到<br><img src="https://raw.githubusercontent.com/Darrenyuen/darrenyuen.github.io/master/images/geek/webp/webpdemo_show_3.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/KMP/" rel="tag"># KMP</a>
+              <a href="/tags/image/" rel="tag"># image</a>
+              <a href="/tags/webp/" rel="tag"># webp</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/03/21/Android/2024-03-21-%E8%A7%A3%E7%AD%94ViewModel%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%96%91%E6%83%91/" rel="prev" title="解答ViewModel使用过程中的疑惑">
+                  <i class="fa fa-angle-left"></i> 解答ViewModel使用过程中的疑惑
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/06/23/Kotlin/2024-06-23-Kotlin%20%E5%8D%8F%E7%A8%8B%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/" rel="next" title="Kotlin 协程知识点记录">
+                  Kotlin 协程知识点记录 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Darren Yuen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

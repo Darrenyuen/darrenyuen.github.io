@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"darrenyuen.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="在一次需求中需要实现播放卡片无限滚动的效果，现有代码使用的是Viewpager2+Fragment的框架，但官方的Viewpager2并没有提供无限滑动的API，所以这里摸索了一套方案记录如下。 在动手coding之前在网上调研了相关效果的实现方案，大致有两种思路：一种是在FragmentStateAdapter#getItemCount()中返回Integer.MAX_VALUE通过不断填充">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Viewpager2+Fragment实现无限循环滑动">
+<meta property="og:url" content="https://darrenyuen.github.io/2024/01/13/Android/2024-01-13-Viewpager2+Fragment%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%91%E5%8A%A8/index.html">
+<meta property="og:site_name" content="Darren Yuen">
+<meta property="og:description" content="在一次需求中需要实现播放卡片无限滚动的效果，现有代码使用的是Viewpager2+Fragment的框架，但官方的Viewpager2并没有提供无限滑动的API，所以这里摸索了一套方案记录如下。 在动手coding之前在网上调研了相关效果的实现方案，大致有两种思路：一种是在FragmentStateAdapter#getItemCount()中返回Integer.MAX_VALUE通过不断填充">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-30T01:48:30.800Z">
+<meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Viewpager2">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://darrenyuen.github.io/2024/01/13/Android/2024-01-13-Viewpager2+Fragment%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%91%E5%8A%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://darrenyuen.github.io/2024/01/13/Android/2024-01-13-Viewpager2+Fragment%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%91%E5%8A%A8/","path":"2024/01/13/Android/2024-01-13-Viewpager2+Fragment实现无限循环滑动/","title":"Viewpager2+Fragment实现无限循环滑动"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Viewpager2+Fragment实现无限循环滑动 | Darren Yuen</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Darren Yuen</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E9%80%A0%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-number">1.</span> <span class="nav-text">改造数据源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Viewpager2%E8%87%AA%E5%8A%A8%E5%88%87%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">Viewpager2自动切换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E5%90%8E%E7%9A%84%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-number">3.</span> <span class="nav-text">优化后的数据源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Darren Yuen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/01/13/Android/2024-01-13-Viewpager2+Fragment%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%91%E5%8A%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Viewpager2+Fragment实现无限循环滑动 | Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Viewpager2+Fragment实现无限循环滑动
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-01-13 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-13T00:00:00+08:00">2024-01-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-30 09:48:30" itemprop="dateModified" datetime="2026-05-30T09:48:30+08:00">2026-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+</blockquote>
+<p>在一次需求中需要实现播放卡片无限滚动的效果，现有代码使用的是Viewpager2+Fragment的框架，但官方的Viewpager2并没有提供无限滑动的API，所以这里摸索了一套方案记录如下。</p>
+<p>在动手coding之前在网上调研了相关效果的实现方案，大致有两种思路：一种是在<code>FragmentStateAdapter#getItemCount()</code>中返回<code>Integer.MAX_VALUE</code>通过不断填充内容使得滑不动尽头达到无限滑动的效果；另一种则是在列表前后各加一个元素，再配合自动切换实现无限滑动。需求实现中采用的是第二种思路。</p>
+<h3 id="改造数据源"><a href="#改造数据源" class="headerlink" title="改造数据源"></a>改造数据源</h3><p>前后各加一个元素的具体实现，是在构造Adapter数据的时候分别将数据列表的最后一个元素和第一个元素拷贝添加至数据列表的头部和尾部。即数据列表的内容由[A, B, C] 变为 [C<code>, A, B, C, A</code>]。</p>
+<h3 id="Viewpager2自动切换"><a href="#Viewpager2自动切换" class="headerlink" title="Viewpager2自动切换"></a>Viewpager2自动切换</h3><p>注册Viewpager2页面状态改变的监听器，在回调中判断如果当前处于第一张卡片（即C&#96;处）则自动切换到倒数第二张卡片（即C处），如果当前当前处于最后一张卡片则自动切换到第二张，通过这样一种方式可以让用户无限滑动卡片。</p>
+<p>相关核心代码如下：</p>
+<p>| </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 改造数据源，原数据为[RED, YELLOW, BLUE]dataList = arrayListOf&lt;Int&gt;(Color.BLUE, Color.RED, Color.YELLOW, Color.BLUE, Color.RED)// 在viewpager2的页面状态监听器中实现自动切换viewPager2?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() &#123;    override fun onPageScrolled(        position: Int,        positionOffset: Float,        positionOffsetPixels: Int    ) &#123;        super.onPageScrolled(position, positionOffset, positionOffsetPixels)                if (positionOffset != 0f) return                // itemCount &gt; 1要支持循环滑动        if (itemCount &gt; 1) &#123;            if (position == 0) &#123;                viewPager?.setCurrentItem(itemCount - 2, false)            &#125; else if (position == itemCount - 1) &#123;                viewPager?.setCurrentItem(1, false)            &#125;        &#125;    &#125;        &#125;)</span></span><br></pre></td></tr></table></figure>
+
+<p> |</p>
+<p>该示例代码在Demo中运行是能达到预期效果的，但是当在主工程上实现时发现[A, B, C] to [C<code>, A, B, C, A</code>]这个对数据源的改造出现了水土不服，原因是Adapter中有一个通过songID获取当前索引的方法：</p>
+<p>| </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">findPosition</span><span class="params">(songId: <span class="type">String</span>)</span></span>: <span class="built_in">Int</span> &#123;    <span class="keyword">return</span> dataList.indexOfFirst &#123; it.songId == songId &#125;    &#125;</span><br></pre></td></tr></table></figure>
+
+<p> |</p>
+<p>所以存在一个问题，即在 [C<code>, A, B, C, A</code>]中，当想获取C的位置时返回的却是C&#96;的索引。这个方法在原有代码中被多处调用，改造这个方法也存在一定风险，本着不动现有逻辑的原则，唯有探索其他方法了。</p>
+<p>之所以这一种方案会出现水土不服，是因为改造数据源时对数据元素进行了深拷贝，导致执行<code>findPostion</code>可能出错。能不能避开通过深拷贝的方式来适配当前的<code>findPosition</code>逻辑呢？答案是肯定的。</p>
+<h3 id="优化后的数据源"><a href="#优化后的数据源" class="headerlink" title="优化后的数据源"></a>优化后的数据源</h3><p>既然通过深拷贝元素对象不可行，那干脆不进行对象的拷贝了。在数据列表前后各加一个元素这个方案优化后的数据源实现方式是在数据列表前后各加一个元素类型的空对象，即只创建元素对象，不对其进行使用。</p>
+<p>| </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (list.size &gt; <span class="number">1</span>) &#123;    <span class="comment">// 构造循环列表 [A, B, C] to [obj, A, B, C, obj]    dataList.add(PlaySongInfo())    dataList.addAll(list)    dataList.add(PlaySongInfo())&#125; else &#123;    dataList.addAll(list)&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p> |</p>
+<p>由于改造后的数据源有前后各有一个仅作填充使用的对象，所以在使用列表数据的时候需要做一下index的转换，以下是使用数据源创建fragment的示例代码：</p>
+<p>| </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">createFragment</span><span class="params">(position: <span class="type">Int</span>)</span></span>: Fragment &#123;    <span class="keyword">val</span> dataSize = dataList.size    <span class="comment">// 卡片大于1时支持循环滑动    val realPosition = if (dataSize &gt; 1) &#123;        if (position == 0) &#123;            dataSize - 2        &#125; else if (position == dataSize - 1) &#123;            1        &#125; else &#123;            position        &#125;    &#125; else &#123;        position    &#125;      val songInfo = dataList[realPosition]      return TargetFragment.newInstance(songInfo)    &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p> |</p>
+<p>至此，优化后的数据源再配合上Viewpager2状态监听器中的自动切换逻辑，播放卡片无限滑动的效果就实现了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Viewpager2/" rel="tag"># Viewpager2</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/12/Android/2024-01-12-Android%E6%A8%A1%E5%9D%97%E5%8C%96%E5%AE%9E%E8%B7%B5%E6%96%B9%E6%A1%88/" rel="prev" title="Android模块化实践方案">
+                  <i class="fa fa-angle-left"></i> Android模块化实践方案
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/02/07/%E6%9E%81%E5%AE%A2/2024-02-07-IDEA%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" rel="next" title="IDEA平台的插件开发实战">
+                  IDEA平台的插件开发实战 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Darren Yuen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

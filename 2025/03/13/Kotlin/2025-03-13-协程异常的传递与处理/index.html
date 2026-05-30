@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"darrenyuen.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="结构化并发让我们先将思路转为日常业务开发中，比如在某某业务中，可能存在好几个需要同时处理的逻辑，比如同时请求两个网络接口，同时操作两个子任务等。我们暂且称上述学术化概念为 多个并发操作。   而每个并发操作其实都是在处理一个单独的任务，这个任务中，可能还存在子任务 ; 同样对于这个子任务来说，它又是其父任务的子单元。每个任务都有自己的生命周期，子任务的生命周期会继承父任务的生命周期，比如如果父任务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="协程异常的传递与处理">
+<meta property="og:url" content="https://darrenyuen.github.io/2025/03/13/Kotlin/2025-03-13-%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E7%9A%84%E4%BC%A0%E9%80%92%E4%B8%8E%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Darren Yuen">
+<meta property="og:description" content="结构化并发让我们先将思路转为日常业务开发中，比如在某某业务中，可能存在好几个需要同时处理的逻辑，比如同时请求两个网络接口，同时操作两个子任务等。我们暂且称上述学术化概念为 多个并发操作。   而每个并发操作其实都是在处理一个单独的任务，这个任务中，可能还存在子任务 ; 同样对于这个子任务来说，它又是其父任务的子单元。每个任务都有自己的生命周期，子任务的生命周期会继承父任务的生命周期，比如如果父任务">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-30T01:48:30.806Z">
+<meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="Kotlin">
+<meta property="article:tag" content="协程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://darrenyuen.github.io/2025/03/13/Kotlin/2025-03-13-%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E7%9A%84%E4%BC%A0%E9%80%92%E4%B8%8E%E5%A4%84%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://darrenyuen.github.io/2025/03/13/Kotlin/2025-03-13-%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E7%9A%84%E4%BC%A0%E9%80%92%E4%B8%8E%E5%A4%84%E7%90%86/","path":"2025/03/13/Kotlin/2025-03-13-协程异常的传递与处理/","title":"协程异常的传递与处理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>协程异常的传递与处理 | Darren Yuen</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Darren Yuen</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E5%8C%96%E5%B9%B6%E5%8F%91"><span class="nav-number">1.</span> <span class="nav-text">结构化并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E4%BC%A0%E9%80%92%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">异常传递流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E4%BC%A0%E9%80%92%E5%BD%A2%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">异常传递形式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SupervisorJob"><span class="nav-number">5.</span> <span class="nav-text">SupervisorJob</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E5%AE%9E%E8%B7%B5"><span class="nav-number">6.</span> <span class="nav-text">场景实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Darren Yuen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2025/03/13/Kotlin/2025-03-13-%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E7%9A%84%E4%BC%A0%E9%80%92%E4%B8%8E%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="协程异常的传递与处理 | Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          协程异常的传递与处理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-13 00:00:00" itemprop="dateCreated datePublished" datetime="2025-03-13T00:00:00+08:00">2025-03-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-30 09:48:30" itemprop="dateModified" datetime="2026-05-30T09:48:30+08:00">2026-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="结构化并发"><a href="#结构化并发" class="headerlink" title="结构化并发"></a>结构化并发</h3><p>让我们先将思路转为日常业务开发中，比如在某某业务中，可能存在好几个需要同时处理的逻辑，比如同时请求两个网络接口，同时操作两个子任务等。我们暂且称上述学术化概念为 多个并发操作。  </p>
+<p>而每个并发操作其实都是在处理一个单独的任务，这个任务中，可能还存在子任务 ; 同样对于这个子任务来说，它又是其父任务的子单元。每个任务都有自己的生命周期，子任务的生命周期会继承父任务的生命周期，比如如果父任务关闭，子任务也会被取消。而如果满足这样特性，我们就称其就是 结构化并发。</p>
+<h3 id="异常传递流程"><a href="#异常传递流程" class="headerlink" title="异常传递流程"></a>异常传递流程</h3><p>默认情况下，任意一个协程发生异常时都会影响到整个协程树，而异常的传递通常是双向的，也即协程会向子协程与父协程共同传递。</p>
+<p>整体流程如下：</p>
+<ol>
+<li><p>先 cancel 子协程</p>
+</li>
+<li><p>取消自己</p>
+</li>
+<li><p>将异常传递给父协程</p>
+</li>
+<li><p>(重复上述过程,直到根协程关闭)</p>
+</li>
+</ol>
+<h3 id="异常传递形式"><a href="#异常传递形式" class="headerlink" title="异常传递形式"></a>异常传递形式</h3><p>- </p>
+<p>launch : 层层向上传递，在launch外部try-catch无效  </p>
+<p>- </p>
+<p>async : 根协程启动或加SupervisorJob启动，会优先当前暴露，可在await()捕获；否则会将异常传递给父协程，导致异常没有在调用处暴露。</p>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p><strong>是否是根协程启动</strong>  </p>
+<p><strong>async + 是否是根协程启动</strong></p>
+<ul>
+<li><p>async 时内部也是新的作用域，如果 async 对应的是根协程（<code>scope.async</code>），那么我们可以在 await() 时直接捕获异常  </p>
+</li>
+<li><p>async 时如果不是根协程启动，则会将异常传递给父协程，导致异常没有在调用处暴露。可以在async时声明SupervisorJob，此时即可在 await() 时捕获异常</p>
+</li>
+</ul>
+<p><strong>launch + 是否是根或父协程自带异常处理器</strong></p>
+<ul>
+<li><p>在launch外部try-catch无用</p>
+</li>
+<li><p>launch自带的异常处理器不会处理当前协程发生的异常，除非当前协程显式添加SupervisorJob</p>
+</li>
+</ul>
+<h3 id="SupervisorJob"><a href="#SupervisorJob" class="headerlink" title="SupervisorJob"></a>SupervisorJob</h3><p>根协程自带的SupervisorJob，子协程会继承  </p>
+<p>非根协程的父协程声明的SupervisorJob，子协程不会继承： 子协程在 launch 时会创建新的协程作用域，其会使用默认新的 Job 替代父协程传递 SupervisorJob ,  </p>
+<p>所以导致我们传递的 SupervisorJob 被覆盖。所以如果我们想让子协程不影响父协程或者其他子协程，此时就必须再显示添加 SupervisorJob。  </p>
+<h3 id="场景实践"><a href="#场景实践" class="headerlink" title="场景实践"></a>场景实践</h3><p><strong>严格意义上来说，所有异常都可以用 tryCatch 去处理</strong>  </p>
+<p>严格意义上来说，所有异常都可以用 tryCatch 去处理，只要我们的处理位置得当。但这并不是所有方式的最优解，特别是如果你想更优雅的处理异常时，此时就可以考虑 CoroutineExceptionHandler 。  </p>
+<p><strong>什么时候该用 SupervisorJob ，什么时候该用 Job?</strong>  </p>
+<p>引用官方的一句话就是：想要避免取消操作在异常发生时被传播，记得使用 SupervisorJob ；反之则使用 Job。  </p>
+<p><strong>SupervisorJob + tryCatch</strong>  </p>
+<p>我们有两个接口 A,B 需要同时请求，当接口A异常时，需要不影响B接口的正常展示，当接口B异常时，此时界面展示异常信息  </p>
+<p><strong>SupervisorJob + CoroutineExceptionHandler</strong>  </p>
+<p>如果你有一个顶级协程，并且需要自动捕获所有的异常，则此时可以选用上述方式</p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><ul>
+<li><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7130132604568731655#heading-1">Kotlin | 关于协程异常处理，你想知道的都在这里</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/Darrenyuen/WorkDemo/tree/master/coroutine/src/main/java/com/darrenyuen/coroutine/execption/practice">实践例子可见代码仓库</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+              <a href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag"># 协程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/01/19/Kotlin/2025-01-19-%E5%8D%8F%E7%A8%8B%E5%8E%9F%E7%90%86%E4%B9%8B%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%8F%E6%8C%82%E8%B5%B7/" rel="prev" title="协程原理之如何实现非阻塞式挂起">
+                  <i class="fa fa-angle-left"></i> 协程原理之如何实现非阻塞式挂起
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/15/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2025-06-15-%E7%A4%BE%E4%BA%A4%E6%8A%80%E5%B7%A7/" rel="next" title="社交技巧">
+                  社交技巧 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Darren Yuen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
