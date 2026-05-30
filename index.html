@@ -1517,7 +1517,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/12/02/Android/2024-12-02-%E7%90%86%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2024/12/02/Android/2024-12-02-%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup%20-%20%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1535,7 +1535,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/12/02/Android/2024-12-02-%E7%90%86%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/" class="post-title-link" itemprop="url">理论：如何自定义ViewGroup</a>
+          <a href="/2024/12/02/Android/2024-12-02-%E5%AE%9E%E8%B7%B5%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup%20-%20%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80/" class="post-title-link" itemprop="url">实践：自定义ViewGroup - 流式布局</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1575,21 +1575,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <blockquote>
-</blockquote>
-<p>本文记录自定义ViewGroup实践中提炼出来的经验。</p>
-<h3 id="ViewGroup是啥？"><a href="#ViewGroup是啥？" class="headerlink" title="ViewGroup是啥？"></a>ViewGroup是啥？</h3><p>ViewGroup相当于一个放置View的容器，并且我们在写布局xml的时候，会告诉容器（凡是以layout为开头的属性，都是为用于告诉容器的），我们的宽度（layout_width）、高度（layout_height）、对齐方式（layout_gravity），当然还有margin等；于是乎，ViewGroup的职能为：给childView计算出建议的宽和高和测量模式 ；决定childView的位置；为什么只是建议的宽和高，而不是直接确定呢，别忘了childView宽和高可以设置为wrap_content，这样只有childView才能计算出自己的宽和高。</p>
-<p>2、View的职责是啥？<br>View的职责，根据测量模式和ViewGroup给出的建议的宽和高，计算出自己的宽和高；同时还有个更重要的职责是：在ViewGroup为其指定的区域内绘制自己的形态。</p>
-<p>3、ViewGroup和LayoutParams之间的关系？<br>大家可以回忆一下，当在LinearLayout中写childView的时候，可以写layout_gravity，layout_weight属性；在RelativeLayout中的childView有layout_centerInParent属性，却没有layout_gravity，layout_weight，这是为什么呢？这是因为每个ViewGroup需要指定一个LayoutParams，用于确定支持childView支持哪些属性，比如LinearLayout指定LinearLayout.LayoutParams等。如果大家去看LinearLayout的源码，会发现其内部定义了LinearLayout.LayoutParams，在此类中，你可以发现weight和gravity的身影。</p>
-<p>2、View的3种测量模式<br>上面提到了ViewGroup会为childView指定测量模式，下面简单介绍下三种测量模式：</p>
-<p>EXACTLY：表示设置了精确的值，一般当childView设置其宽、高为精确值、match_parent时，ViewGroup会将其设置为EXACTLY；</p>
-<p>AT_MOST：表示子布局被限制在一个最大值内，一般当childView设置其宽、高为wrap_content时，ViewGroup会将其设置为AT_MOST；</p>
-<p>UNSPECIFIED：表示子布局想要多大就多大，一般出现在AadapterView的item的heightMode中、ScrollView的childView的heightMode中；此种模式比较少见。</p>
-<p>注：上面的每一行都有一个一般，意思上述不是绝对的，对于childView的mode的设置还会和ViewGroup的测量mode有一定的关系；当然了，这是第一篇自定义ViewGroup，而且绝大部分情况都是上面的规则，所以为了通俗易懂，暂不深入讨论其他内容。</p>
-<p>3、从API角度进行浅析<br>上面叙述了ViewGroup和View的职责，下面从API角度进行浅析。</p>
-<p>View的根据ViewGroup传人的测量值和模式，对自己宽高进行确定（onMeasure中完成），然后在onDraw中完成对自己的绘制。</p>
-<p>ViewGroup需要给View传入view的测量值和模式（onMeasure中完成），而且对于此ViewGroup的父布局，自己也需要在onMeasure中完成对自己宽和高的确定。此外，需要在onLayout中完成对其childView的位置的指定。</p>
-
+          
       
     </div>
 
