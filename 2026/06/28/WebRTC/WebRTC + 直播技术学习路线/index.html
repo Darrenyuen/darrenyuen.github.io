@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"darrenyuen.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="目标：理解 WebRTC 原理 + 跑通 Android 推拉流 Demo + 了解移动端直播架构节奏：工作日 30-45 分钟（看理论），周末集中写代码整理时间：2026-06   一、背景知识：WebRTC vs 传统直播1.1 WebRTC 不只针对 WebWebRTC 有完整的 Android &#x2F; iOS 原生库，移动端支持非常成熟：  Android：org.webrtc:g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRTC + 直播技术学习路线">
+<meta property="og:url" content="https://darrenyuen.github.io/2026/06/28/WebRTC/WebRTC%20+%20%E7%9B%B4%E6%92%AD%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/index.html">
+<meta property="og:site_name" content="Darren Yuen">
+<meta property="og:description" content="目标：理解 WebRTC 原理 + 跑通 Android 推拉流 Demo + 了解移动端直播架构节奏：工作日 30-45 分钟（看理论），周末集中写代码整理时间：2026-06   一、背景知识：WebRTC vs 传统直播1.1 WebRTC 不只针对 WebWebRTC 有完整的 Android &#x2F; iOS 原生库，移动端支持非常成熟：  Android：org.webrtc:g">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-28T14:33:36.444Z">
+<meta property="article:author" content="Darren Yuen">
+<meta property="article:tag" content="webrtc">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://darrenyuen.github.io/2026/06/28/WebRTC/WebRTC%20+%20%E7%9B%B4%E6%92%AD%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://darrenyuen.github.io/2026/06/28/WebRTC/WebRTC%20+%20%E7%9B%B4%E6%92%AD%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/","path":"2026/06/28/WebRTC/WebRTC + 直播技术学习路线/","title":"WebRTC + 直播技术学习路线"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WebRTC + 直播技术学习路线 | Darren Yuen</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Darren Yuen</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86%EF%BC%9AWebRTC-vs-%E4%BC%A0%E7%BB%9F%E7%9B%B4%E6%92%AD"><span class="nav-number">1.</span> <span class="nav-text">一、背景知识：WebRTC vs 传统直播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-WebRTC-%E4%B8%8D%E5%8F%AA%E9%92%88%E5%AF%B9-Web"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 WebRTC 不只针对 Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E4%B8%89%E7%A7%8D%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 三种运行模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E4%BC%A0%E7%BB%9F%E7%9B%B4%E6%92%AD-vs-WebRTC-%E8%AF%A6%E7%BB%86%E5%AF%B9%E6%AF%94"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 传统直播 vs WebRTC 详细对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E5%AF%B9%E6%AF%94"><span class="nav-number">1.3.1.</span> <span class="nav-text">架构对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%B6%E8%BF%9F%E5%AF%B9%E6%AF%94"><span class="nav-number">1.3.2.</span> <span class="nav-text">延迟对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%B1%E7%BD%91%E8%A1%A8%E7%8E%B0"><span class="nav-number">1.3.3.</span> <span class="nav-text">弱网表现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%90%E6%9C%AC%E5%AF%B9%E6%AF%94"><span class="nav-number">1.3.4.</span> <span class="nav-text">成本对比</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%9B%B4%E6%92%AD%E6%9E%B6%E6%9E%84%E5%85%A8%E8%B2%8C"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 移动端直播架构全貌</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Week-1-2%EF%BC%9A%E7%90%86%E8%AE%BA%E6%89%93%E5%BA%95"><span class="nav-number">2.</span> <span class="nav-text">二、Week 1-2：理论打底</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-1%EF%BC%9AWebRTC-%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">Week 1：WebRTC 核心原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-2%EF%BC%9A%E9%9F%B3%E8%A7%86%E9%A2%91%E5%9F%BA%E7%A1%80"><span class="nav-number">2.2.</span> <span class="nav-text">Week 2：音视频基础</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Week-3-4%EF%BC%9AAndroid-WebRTC-%E7%AC%AC%E4%B8%80%E4%B8%AA-Demo"><span class="nav-number">3.</span> <span class="nav-text">三、Week 3-4：Android WebRTC 第一个 Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-3%EF%BC%9ALoopback-Demo"><span class="nav-number">3.1.</span> <span class="nav-text">Week 3：Loopback Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-4%EF%BC%9A%E4%BF%A1%E4%BB%A4%E6%9C%8D%E5%8A%A1%E5%99%A8-1v1-%E9%80%9A%E8%AF%9D"><span class="nav-number">3.2.</span> <span class="nav-text">Week 4：信令服务器 + 1v1 通话</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Week-5-6%EF%BC%9ASFU-%E5%A4%9A%E4%BA%BA%E6%8E%A8%E6%8B%89%E6%B5%81"><span class="nav-number">4.</span> <span class="nav-text">四、Week 5-6：SFU + 多人推拉流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-5%EF%BC%9A%E6%8E%A5%E5%85%A5-Livekit"><span class="nav-number">4.1.</span> <span class="nav-text">Week 5：接入 Livekit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-6%EF%BC%9A%E4%BC%A0%E7%BB%9F%E6%8E%A8%E6%8B%89%E6%B5%81%EF%BC%88RTMP-HLS%EF%BC%89"><span class="nav-number">4.2.</span> <span class="nav-text">Week 6：传统推拉流（RTMP + HLS）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81Week-7-8%EF%BC%9A%E8%9E%8D%E4%BC%9A%E8%B4%AF%E9%80%9A"><span class="nav-number">5.</span> <span class="nav-text">五、Week 7-8：融会贯通</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-7%EF%BC%9A%E8%87%AA%E6%B5%8B%E9%97%AE%E9%A2%98"><span class="nav-number">5.1.</span> <span class="nav-text">Week 7：自测问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Week-8%EF%BC%9AWireshark-%E6%8A%93%E5%8C%85"><span class="nav-number">5.2.</span> <span class="nav-text">Week 8：Wireshark 抓包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%85%8D%E5%A5%97%E8%B5%84%E6%BA%90"><span class="nav-number">6.</span> <span class="nav-text">六、配套资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E6%AF%8F%E5%91%A8%E9%AA%8C%E6%94%B6-Checklist"><span class="nav-number">7.</span> <span class="nav-text">七、每周验收 Checklist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%E4%B8%80%EF%BC%9A%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%94%A8-Docker%EF%BC%8C%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B7%91%E7%9C%9F%E6%9C%BA"><span class="nav-number">8.</span> <span class="nav-text">附录一：服务端用 Docker，客户端跑真机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8E%A8%E8%8D%90-Docker-%E8%B7%91%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">8.1.</span> <span class="nav-text">为什么推荐 Docker 跑服务端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E9%80%82%E5%90%88%E7%94%A8-Docker-%E7%9A%84%E9%83%A8%E5%88%86"><span class="nav-number">8.2.</span> <span class="nav-text">不适合用 Docker 的部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%BB%84%E5%90%88"><span class="nav-number">8.3.</span> <span class="nav-text">推荐组合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%E4%BA%8C%EF%BC%9A%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="nav-number">9.</span> <span class="nav-text">附录二：常见问题排查</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Darren Yuen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2026/06/28/WebRTC/WebRTC%20+%20%E7%9B%B4%E6%92%AD%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WebRTC + 直播技术学习路线 | Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WebRTC + 直播技术学习路线
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-06-28 00:00:00 / 修改时间：22:33:36" itemprop="dateCreated datePublished" datetime="2026-06-28T00:00:00+08:00">2026-06-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/WebRTC/" itemprop="url" rel="index"><span itemprop="name">WebRTC</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>目标：理解 WebRTC 原理 + 跑通 Android 推拉流 Demo + 了解移动端直播架构<br>节奏：工作日 30-45 分钟（看理论），周末集中写代码<br>整理时间：2026-06</p>
+</blockquote>
+<hr>
+<h2 id="一、背景知识：WebRTC-vs-传统直播"><a href="#一、背景知识：WebRTC-vs-传统直播" class="headerlink" title="一、背景知识：WebRTC vs 传统直播"></a>一、背景知识：WebRTC vs 传统直播</h2><h3 id="1-1-WebRTC-不只针对-Web"><a href="#1-1-WebRTC-不只针对-Web" class="headerlink" title="1.1 WebRTC 不只针对 Web"></a>1.1 WebRTC 不只针对 Web</h3><p>WebRTC 有完整的 Android &#x2F; iOS 原生库，移动端支持非常成熟：</p>
+<ul>
+<li>Android：<code>org.webrtc:google-webrtc</code> 或 <code>io.getstream:stream-webrtc-android</code></li>
+<li>iOS：内置 WebRTC.framework</li>
+<li>Web：浏览器原生支持</li>
+</ul>
+<h3 id="1-2-三种运行模式"><a href="#1-2-三种运行模式" class="headerlink" title="1.2 三种运行模式"></a>1.2 三种运行模式</h3><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>架构</th>
+<th>适用场景</th>
+<th>延迟</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>P2P</strong></td>
+<td>端到端直连</td>
+<td>1v1 通话</td>
+<td>最低</td>
+</tr>
+<tr>
+<td><strong>SFU</strong></td>
+<td>服务器转发，不解码</td>
+<td>多人会议、连麦</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>MCU</strong></td>
+<td>服务器解码+混流</td>
+<td>大会议、弱网端</td>
+<td>较高</td>
+</tr>
+</tbody></table>
+<p>腾讯会议、Zoom 均采用 <strong>SFU + MCU 混合模式</strong>，根据参与人数和网络状况动态切换。</p>
+<h3 id="1-3-传统直播-vs-WebRTC-详细对比"><a href="#1-3-传统直播-vs-WebRTC-详细对比" class="headerlink" title="1.3 传统直播 vs WebRTC 详细对比"></a>1.3 传统直播 vs WebRTC 详细对比</h3><h4 id="架构对比"><a href="#架构对比" class="headerlink" title="架构对比"></a>架构对比</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 传统直播</span><br><span class="line">主播 → RTMP推流 → 流媒体服务器 → CDN分发 → 观众拉流(HLS/FLV)</span><br><span class="line"></span><br><span class="line"># WebRTC</span><br><span class="line">端A &lt;── ICE协商 ──&gt; 端B</span><br><span class="line">    &lt;── 媒体流(SRTP) ──&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="延迟对比"><a href="#延迟对比" class="headerlink" title="延迟对比"></a>延迟对比</h4><table>
+<thead>
+<tr>
+<th>协议</th>
+<th>延迟</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HLS</td>
+<td>5-30秒</td>
+<td>切片缓冲，每片2-10秒</td>
+</tr>
+<tr>
+<td>HTTP-FLV</td>
+<td>1-3秒</td>
+<td>流式传输，有缓冲区</td>
+</tr>
+<tr>
+<td>RTMP</td>
+<td>1-3秒</td>
+<td>TCP，有重传队列</td>
+</tr>
+<tr>
+<td>WebRTC</td>
+<td>50-500ms</td>
+<td>UDP，丢包直接丢弃不等重传</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>WebRTC 延迟低的根本原因：<strong>宁可丢帧，不等重传</strong>。</p>
+</blockquote>
+<h4 id="弱网表现"><a href="#弱网表现" class="headerlink" title="弱网表现"></a>弱网表现</h4><p>WebRTC 内置三重弱网保障：</p>
+<ul>
+<li><strong>NACK</strong>：发现丢包主动请求重传</li>
+<li><strong>FEC</strong>（前向纠错）：提前发冗余包，丢了也能还原</li>
+<li><strong>GCC</strong>（Google Congestion Control）：实时估算带宽，自动降码率保流畅</li>
+</ul>
+<h4 id="成本对比"><a href="#成本对比" class="headerlink" title="成本对比"></a>成本对比</h4><table>
+<thead>
+<tr>
+<th></th>
+<th>传统直播</th>
+<th>WebRTC</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>分发成本</td>
+<td>低（CDN按流量）</td>
+<td>高（SFU服务器）</td>
+</tr>
+<tr>
+<td>开源生态</td>
+<td>FFmpeg&#x2F;ijkplayer&#x2F;SRS</td>
+<td>WebRTC原生&#x2F;Mediasoup&#x2F;Livekit</td>
+</tr>
+<tr>
+<td>延迟</td>
+<td>秒级</td>
+<td>毫秒级</td>
+</tr>
+</tbody></table>
+<h3 id="1-4-移动端直播架构全貌"><a href="#1-4-移动端直播架构全貌" class="headerlink" title="1.4 移动端直播架构全貌"></a>1.4 移动端直播架构全貌</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">主播手机</span><br><span class="line">  ├── RTMP/SRT 推流 ──&gt; CDN ──&gt; HLS/FLV ──&gt; 普通观众（高并发）</span><br><span class="line">  └── WebRTC ──────────&gt; SFU ──&gt; WebRTC ──&gt; 连麦观众（低延迟）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、Week-1-2：理论打底"><a href="#二、Week-1-2：理论打底" class="headerlink" title="二、Week 1-2：理论打底"></a>二、Week 1-2：理论打底</h2><blockquote>
+<p>工作日 30-45 分钟，通勤&#x2F;睡前均可。不写代码，先把原理搞透。</p>
+</blockquote>
+<h3 id="Week-1：WebRTC-核心原理"><a href="#Week-1：WebRTC-核心原理" class="headerlink" title="Week 1：WebRTC 核心原理"></a>Week 1：WebRTC 核心原理</h3><p>必须理解的 5 个核心概念：</p>
+<p><strong>① 信令（Signaling）</strong></p>
+<ul>
+<li>WebRTC 本身<strong>不定义</strong>信令协议，需要自己实现</li>
+<li>本质：交换 SDP 和 ICE Candidate 的通道</li>
+<li>常见实现：WebSocket &#x2F; HTTP 长轮询 &#x2F; 任意方式均可</li>
+</ul>
+<p><strong>② SDP（Session Description Protocol）</strong></p>
+<ul>
+<li>描述「我能用什么编解码器、什么格式通信」</li>
+<li>使用 Offer&#x2F;Answer 模型：A 发 Offer，B 回 Answer</li>
+</ul>
+<p><strong>③ ICE &#x2F; STUN &#x2F; TURN</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">STUN Server：告诉你「你的公网 IP 是 x.x.x.x:port」</span><br><span class="line">ICE：枚举所有可能的连接路径，选最优的一条</span><br><span class="line">  - host：本机局域网地址（最优先）</span><br><span class="line">  - srflx：通过 STUN 获取的公网地址</span><br><span class="line">  - relay：通过 TURN 中继的地址（兜底）</span><br><span class="line">TURN Server：P2P 穿透失败时，所有流量通过服务器中继</span><br></pre></td></tr></table></figure>
+
+<p><strong>④ DTLS + SRTP</strong></p>
+<ul>
+<li>所有 WebRTC 媒体流<strong>强制加密</strong>，无法关闭</li>
+<li>DTLS：基于 UDP 的 TLS，握手交换密钥</li>
+<li>SRTP：加密后的 RTP，传输音视频数据</li>
+</ul>
+<p><strong>⑤ 拥塞控制（GCC）</strong></p>
+<ul>
+<li>实时估算当前可用带宽</li>
+<li>带宽充足 → 提升码率&#x2F;分辨率；带宽不足 → 降低码率</li>
+</ul>
+<p>推荐阅读：<a target="_blank" rel="noopener" href="https://webrtcforthecurious.com/">WebRTC for the Curious</a>（必读，免费电子书）</p>
+<h3 id="Week-2：音视频基础"><a href="#Week-2：音视频基础" class="headerlink" title="Week 2：音视频基础"></a>Week 2：音视频基础</h3><p><strong>视频编解码器对比</strong></p>
+<table>
+<thead>
+<tr>
+<th>编解码器</th>
+<th>特点</th>
+<th>WebRTC 中的角色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>H.264</td>
+<td>硬件支持最广，兼容性最好</td>
+<td>Android 默认首选</td>
+</tr>
+<tr>
+<td>H.265&#x2F;HEVC</td>
+<td>压缩率更高，但专利费问题</td>
+<td>部分场景使用</td>
+</tr>
+<tr>
+<td>VP8</td>
+<td>Google 开源，无专利</td>
+<td>WebRTC 早期默认</td>
+</tr>
+<tr>
+<td>VP9</td>
+<td>VP8 升级版，压缩率好</td>
+<td>Chrome 常用</td>
+</tr>
+<tr>
+<td>AV1</td>
+<td>新一代，压缩率最高</td>
+<td>逐步普及中</td>
+</tr>
+</tbody></table>
+<p><strong>关键参数关系</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">码率 = 分辨率 × 帧率 × 压缩率（近似）</span><br><span class="line">弱网时：优先降码率 → 其次降分辨率 → 最后降帧率</span><br></pre></td></tr></table></figure>
+
+<p><strong>帧类型</strong></p>
+<ul>
+<li>I帧（关键帧）：完整图像，可独立解码，体积大</li>
+<li>P帧（预测帧）：相对前一帧的差异，体积小</li>
+<li>B帧（双向预测帧）：WebRTC 通常不用（增加延迟）</li>
+</ul>
+<p>推荐阅读：<a target="_blank" rel="noopener" href="https://github.com/leandromoreira/digital_video_introduction">Digital Video Introduction</a></p>
+<hr>
+<h2 id="三、Week-3-4：Android-WebRTC-第一个-Demo"><a href="#三、Week-3-4：Android-WebRTC-第一个-Demo" class="headerlink" title="三、Week 3-4：Android WebRTC 第一个 Demo"></a>三、Week 3-4：Android WebRTC 第一个 Demo</h2><h3 id="Week-3：Loopback-Demo"><a href="#Week-3：Loopback-Demo" class="headerlink" title="Week 3：Loopback Demo"></a>Week 3：Loopback Demo</h3><p>添加依赖：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// app/build.gradle</span></span><br><span class="line">implementation <span class="string">&#x27;io.getstream:stream-webrtc-android:1.1.3&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>核心 API 学习顺序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PeerConnectionFactory（全局初始化）</span><br><span class="line">    ↓</span><br><span class="line">AudioSource / VideoSource（媒体源）</span><br><span class="line">    ↓</span><br><span class="line">AudioTrack / VideoTrack（媒体轨道）</span><br><span class="line">    ↓</span><br><span class="line">PeerConnection（连接管理核心）</span><br><span class="line">    ↓</span><br><span class="line">SurfaceViewRenderer（视频渲染）</span><br></pre></td></tr></table></figure>
+
+<p>Loopback Demo 核心逻辑：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 本机两个 PeerConnection 互连，不需要服务器</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">startNegotiation</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> constraints = MediaConstraints().apply &#123;</span><br><span class="line">        mandatory.add(MediaConstraints.KeyValuePair(<span class="string">&quot;OfferToReceiveVideo&quot;</span>, <span class="string">&quot;true&quot;</span>))</span><br><span class="line">    &#125;</span><br><span class="line">    pcA.createOffer(<span class="keyword">object</span> : SdpObserver &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateSuccess</span><span class="params">(sdp: <span class="type">SessionDescription</span>)</span></span> &#123;</span><br><span class="line">            pcA.setLocalDescription(SimpleSdpObserver(), sdp)</span><br><span class="line">            pcB.setRemoteDescription(SimpleSdpObserver(), sdp)</span><br><span class="line">            pcB.createAnswer(<span class="keyword">object</span> : SdpObserver &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateSuccess</span><span class="params">(answer: <span class="type">SessionDescription</span>)</span></span> &#123;</span><br><span class="line">                    pcB.setLocalDescription(SimpleSdpObserver(), answer)</span><br><span class="line">                    pcA.setRemoteDescription(SimpleSdpObserver(), answer)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSetSuccess</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateFailure</span><span class="params">(error: <span class="type">String</span>)</span></span> &#123;&#125;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSetFailure</span><span class="params">(error: <span class="type">String</span>)</span></span> &#123;&#125;</span><br><span class="line">            &#125;, constraints)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSetSuccess</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateFailure</span><span class="params">(error: <span class="type">String</span>)</span></span> &#123;&#125;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSetFailure</span><span class="params">(error: <span class="type">String</span>)</span></span> &#123;&#125;</span><br><span class="line">    &#125;, constraints)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ICE Candidate 交换</span></span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">class</span> <span class="title class_">PeerAObserver</span> : <span class="type">PeerConnection.Observer</span> &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onIceCandidate</span><span class="params">(candidate: <span class="type">IceCandidate</span>)</span></span> &#123;</span><br><span class="line">        pcB.addIceCandidate(candidate)  <span class="comment">// A 的 candidate 加给 B</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>验收标准：</strong> 本机摄像头画面出现在两个 SurfaceViewRenderer 里。</p>
+<h3 id="Week-4：信令服务器-1v1-通话"><a href="#Week-4：信令服务器-1v1-通话" class="headerlink" title="Week 4：信令服务器 + 1v1 通话"></a>Week 4：信令服务器 + 1v1 通话</h3><p>最简信令服务器（Node.js）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">WebSocket</span> = <span class="built_in">require</span>(<span class="string">&#x27;ws&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> wss = <span class="keyword">new</span> <span class="title class_">WebSocket</span>.<span class="title class_">Server</span>(&#123; <span class="attr">port</span>: <span class="number">8080</span> &#125;)</span><br><span class="line"><span class="keyword">const</span> rooms = &#123;&#125;</span><br><span class="line"></span><br><span class="line">wss.<span class="title function_">on</span>(<span class="string">&#x27;connection&#x27;</span>, <span class="function">(<span class="params">ws</span>) =&gt;</span> &#123;</span><br><span class="line">    ws.<span class="title function_">on</span>(<span class="string">&#x27;message&#x27;</span>, <span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> msg = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(data)</span><br><span class="line">        <span class="keyword">if</span> (!rooms[msg.<span class="property">roomId</span>]) rooms[msg.<span class="property">roomId</span>] = []</span><br><span class="line">        <span class="keyword">if</span> (!rooms[msg.<span class="property">roomId</span>].<span class="title function_">includes</span>(ws)) rooms[msg.<span class="property">roomId</span>].<span class="title function_">push</span>(ws)</span><br><span class="line">        <span class="comment">// 转发给房间内其他人</span></span><br><span class="line">        rooms[msg.<span class="property">roomId</span>].<span class="title function_">forEach</span>(<span class="function"><span class="params">client</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (client !== ws &amp;&amp; client.<span class="property">readyState</span> === <span class="title class_">WebSocket</span>.<span class="property">OPEN</span>) &#123;</span><br><span class="line">                client.<span class="title function_">send</span>(data)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>两台手机通话时序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">设备A                信令服务器              设备B</span><br><span class="line">  ├── 加入房间 ───────→ │                      │</span><br><span class="line">  │                    │ ←── 加入房间 ──────────┤</span><br><span class="line">  ├── createOffer ─────→ │                      │</span><br><span class="line">  │                    │ ──── offer ────────────→ │</span><br><span class="line">  │                    │ ←─── createAnswer ────── │</span><br><span class="line">  ├── setRemoteDesc ←── │                      │</span><br><span class="line">  ├── IceCandidate ────→ │ ──── candidate ────── → │</span><br><span class="line">  └──────────── P2P 媒体流建立 ─────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>验收标准：</strong> 两台手机互相看到对方摄像头，听到对方声音。</p>
+<hr>
+<h2 id="四、Week-5-6：SFU-多人推拉流"><a href="#四、Week-5-6：SFU-多人推拉流" class="headerlink" title="四、Week 5-6：SFU + 多人推拉流"></a>四、Week 5-6：SFU + 多人推拉流</h2><h3 id="Week-5：接入-Livekit"><a href="#Week-5：接入-Livekit" class="headerlink" title="Week 5：接入 Livekit"></a>Week 5：接入 Livekit</h3><p>搭建服务器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run --<span class="built_in">rm</span> \</span><br><span class="line">  -p 7880:7880 -p 7881:7881 -p 7882:7882/udp \</span><br><span class="line">  livekit/livekit-server --dev --<span class="built_in">bind</span> 0.0.0.0</span><br></pre></td></tr></table></figure>
+
+<p>Android 接入核心代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;io.livekit:livekit-android:2.5.0&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 连接并推流</span></span><br><span class="line">room = LiveKit.create(applicationContext)</span><br><span class="line">room.connect(url = <span class="string">&quot;ws://your-server:7880&quot;</span>, token = token)</span><br><span class="line">room.localParticipant.setCameraEnabled(<span class="literal">true</span>)</span><br><span class="line">room.localParticipant.setMicrophoneEnabled(<span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 拉流（订阅其他参与者）</span></span><br><span class="line">room.events.collect &#123; event -&gt;</span><br><span class="line">    <span class="keyword">if</span> (event <span class="keyword">is</span> RoomEvent.TrackSubscribed &amp;&amp; event.track <span class="keyword">is</span> VideoTrack) &#123;</span><br><span class="line">        (event.track <span class="keyword">as</span> VideoTrack).addRenderer(remoteRenderer)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>验收标准：</strong> 3台手机进同一房间，互相能看到听到。</p>
+<h3 id="Week-6：传统推拉流（RTMP-HLS）"><a href="#Week-6：传统推拉流（RTMP-HLS）" class="headerlink" title="Week 6：传统推拉流（RTMP + HLS）"></a>Week 6：传统推拉流（RTMP + HLS）</h3><p>搭建 SRS 服务器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 1935:1935 -p 8080:8080 ossrs/srs:5</span><br></pre></td></tr></table></figure>
+
+<p>Android RTMP 推流（腾讯 LiteAV SDK）：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> pusher = V2TXLivePusher(<span class="keyword">this</span>, V2TXLiveMode.TXLiveMode_RTMP)</span><br><span class="line">pusher.startCamera(<span class="literal">true</span>)</span><br><span class="line">pusher.startMicrophone()</span><br><span class="line">pusher.startPush(<span class="string">&quot;rtmp://your-server/live/stream1&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Android HLS 拉流（ExoPlayer）：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> player = ExoPlayer.Builder(<span class="keyword">this</span>).build()</span><br><span class="line">player.setMediaItem(MediaItem.fromUri(<span class="string">&quot;http://your-server:8080/live/stream1.m3u8&quot;</span>))</span><br><span class="line">player.prepare()</span><br><span class="line">player.play()</span><br></pre></td></tr></table></figure>
+
+<p><strong>验收标准：</strong> 一台手机推 RTMP，另一台 ExoPlayer 拉 HLS 播放。</p>
+<hr>
+<h2 id="五、Week-7-8：融会贯通"><a href="#五、Week-7-8：融会贯通" class="headerlink" title="五、Week 7-8：融会贯通"></a>五、Week 7-8：融会贯通</h2><h3 id="Week-7：自测问题"><a href="#Week-7：自测问题" class="headerlink" title="Week 7：自测问题"></a>Week 7：自测问题</h3><ol>
+<li>为什么 WebRTC 的延迟比 HLS 低 10-100 倍？</li>
+<li>ICE 协商失败会怎样？TURN 服务器的作用是什么？</li>
+<li>GCC 是怎么估算带宽的？丢包和延迟增大各触发什么策略？</li>
+<li>SFU 和 MCU 的 CPU 消耗为什么差这么多？</li>
+<li>1000 人观看的直播，WebRTC 和 HLS 的服务器成本差多少？</li>
+</ol>
+<h3 id="Week-8：Wireshark-抓包"><a href="#Week-8：Wireshark-抓包" class="headerlink" title="Week 8：Wireshark 抓包"></a>Week 8：Wireshark 抓包</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install wireshark</span><br><span class="line"></span><br><span class="line"><span class="comment"># 过滤条件</span></span><br><span class="line">dtls          <span class="comment"># DTLS 握手</span></span><br><span class="line">stun          <span class="comment"># STUN 协议</span></span><br></pre></td></tr></table></figure>
+
+<p>重点观察：</p>
+<ul>
+<li>STUN Binding Request&#x2F;Response：ICE 发现公网地址</li>
+<li>DTLS ClientHello&#x2F;ServerHello：加密握手过程</li>
+<li>RTCP REMB 包：带宽估算反馈信号</li>
+</ul>
+<hr>
+<h2 id="六、配套资源"><a href="#六、配套资源" class="headerlink" title="六、配套资源"></a>六、配套资源</h2><table>
+<thead>
+<tr>
+<th>资源</th>
+<th>类型</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WebRTC for the Curious</td>
+<td>必读电子书</td>
+<td><a target="_blank" rel="noopener" href="https://webrtcforthecurious.com/">https://webrtcforthecurious.com/</a></td>
+</tr>
+<tr>
+<td>Digital Video Introduction</td>
+<td>音视频基础</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/leandromoreira/digital_video_introduction">https://github.com/leandromoreira/digital_video_introduction</a></td>
+</tr>
+<tr>
+<td>stream-webrtc-android</td>
+<td>Android WebRTC 库</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/GetStream/webrtc-android">https://github.com/GetStream/webrtc-android</a></td>
+</tr>
+<tr>
+<td>Livekit Android SDK</td>
+<td>SFU 接入</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/livekit/client-sdk-android">https://github.com/livekit/client-sdk-android</a></td>
+</tr>
+<tr>
+<td>SRS 流媒体服务器</td>
+<td>传统直播服务器</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/ossrs/srs">https://github.com/ossrs/srs</a></td>
+</tr>
+<tr>
+<td>AppRTCMobile</td>
+<td>Google 官方示例</td>
+<td><a target="_blank" rel="noopener" href="https://chromium.googlesource.com/external/webrtc/">https://chromium.googlesource.com/external/webrtc/</a></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、每周验收-Checklist"><a href="#七、每周验收-Checklist" class="headerlink" title="七、每周验收 Checklist"></a>七、每周验收 Checklist</h2><p><strong>Week 1</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 能解释 SDP Offer&#x2F;Answer 交换过程</li>
+<li><input disabled="" type="checkbox"> 能画出 ICE 连接建立的流程图</li>
+<li><input disabled="" type="checkbox"> 理解 STUN 和 TURN 的区别</li>
+</ul>
+<p><strong>Week 2</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 理解 I&#x2F;P&#x2F;B 帧区别，知道 WebRTC 为什么不用 B 帧</li>
+<li><input disabled="" type="checkbox"> 能解释码率&#x2F;帧率&#x2F;分辨率三者关系</li>
+</ul>
+<p><strong>Week 3</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Loopback Demo 跑通</li>
+<li><input disabled="" type="checkbox"> 理解 SDP 协商在代码里如何触发</li>
+</ul>
+<p><strong>Week 4</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 信令服务器搭起来</li>
+<li><input disabled="" type="checkbox"> 两台手机 1v1 通话成功</li>
+</ul>
+<p><strong>Week 5</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Livekit 3人房间跑通</li>
+<li><input disabled="" type="checkbox"> 理解 SFU 模式下每个客户端的上下行</li>
+</ul>
+<p><strong>Week 6</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> RTMP 推流 + HLS 拉流跑通</li>
+<li><input disabled="" type="checkbox"> 能描述「直播+连麦」混合架构</li>
+</ul>
+<p><strong>Week 7</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 能回答全部 5 个自测问题</li>
+</ul>
+<p><strong>Week 8</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 抓到 DTLS 握手包并能解释</li>
+<li><input disabled="" type="checkbox"> 找到 RTCP REMB 包，理解其作用</li>
+</ul>
+<hr>
+<h2 id="附录一：服务端用-Docker，客户端跑真机"><a href="#附录一：服务端用-Docker，客户端跑真机" class="headerlink" title="附录一：服务端用 Docker，客户端跑真机"></a>附录一：服务端用 Docker，客户端跑真机</h2><h3 id="为什么推荐-Docker-跑服务端"><a href="#为什么推荐-Docker-跑服务端" class="headerlink" title="为什么推荐 Docker 跑服务端"></a>为什么推荐 Docker 跑服务端</h3><p>跑 Demo 时服务端有三个组件：信令服务器、Livekit SFU、SRS 流媒体服务器。这三个用 Docker 有明显优势：</p>
+<ul>
+<li>一行命令启动，不污染本机环境</li>
+<li>随时销毁重建，环境始终干净</li>
+<li>官方镜像开箱即用，无需手动编译配置</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 信令服务器（自己写的 Node.js）</span></span><br><span class="line">docker build -t signaling-server .</span><br><span class="line">docker run -p 8080:8080 signaling-server</span><br><span class="line"></span><br><span class="line"><span class="comment"># Livekit SFU</span></span><br><span class="line">docker run --<span class="built_in">rm</span> \</span><br><span class="line">  -p 7880:7880 -p 7881:7881 -p 7882:7882/udp \</span><br><span class="line">  livekit/livekit-server --dev --<span class="built_in">bind</span> 0.0.0.0</span><br><span class="line"></span><br><span class="line"><span class="comment"># SRS 流媒体服务器</span></span><br><span class="line">docker run -p 1935:1935 -p 8080:8080 ossrs/srs:5</span><br></pre></td></tr></table></figure>
+
+<h3 id="不适合用-Docker-的部分"><a href="#不适合用-Docker-的部分" class="headerlink" title="不适合用 Docker 的部分"></a>不适合用 Docker 的部分</h3><ul>
+<li><strong>Android App</strong>：必须跑在真机或 Android 模拟器上，Docker 里没有摄像头&#x2F;麦克风</li>
+<li><strong>Wireshark 抓包</strong>：Docker 有网络 NAT 层，抓包会变复杂，建议直接在宿主机抓</li>
+</ul>
+<h3 id="推荐组合"><a href="#推荐组合" class="headerlink" title="推荐组合"></a>推荐组合</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">服务端（Docker）          客户端（真机）</span><br><span class="line">信令服务器 ──────────────→ Android 手机A</span><br><span class="line">Livekit SFU ─────────────→ Android 手机B</span><br><span class="line">SRS 流媒体 ───────────────→ Android 手机C</span><br></pre></td></tr></table></figure>
+
+<p>局域网内手机和 Mac 互通，<code>your-server</code> 填 Mac 的局域网 IP 即可。</p>
+<hr>
+<h2 id="附录二：常见问题排查"><a href="#附录二：常见问题排查" class="headerlink" title="附录二：常见问题排查"></a>附录二：常见问题排查</h2><p><strong>ICE 连接失败</strong></p>
+<ol>
+<li>检查 STUN 服务器是否可达</li>
+<li>检查防火墙是否放行 UDP</li>
+<li>检查 ICE candidate 是否正确交换</li>
+<li>添加 TURN 服务器作为兜底</li>
+</ol>
+<p><strong>画面卡顿&#x2F;花屏</strong></p>
+<ol>
+<li>查看丢包率（&gt;5% 明显影响质量）</li>
+<li>确认硬件编码已启用</li>
+<li>检查码率是否超过实际带宽</li>
+</ol>
+<p><strong>Android 音频回声</strong></p>
+<ol>
+<li>确认 AEC（回声消除）已启用</li>
+<li>检查 AudioManager 模式是否为 MODE_IN_COMMUNICATION</li>
+</ol>
+<hr>
+<p><em>最后更新：2026-06</em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/webrtc/" rel="tag"># webrtc</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/30/Android/2026-05-30-Android-SSO-And-App-to-App-Auth/" rel="prev" title="Android SSO 与 App-to-App 登录流程深度解析">
+                  <i class="fa fa-angle-left"></i> Android SSO 与 App-to-App 登录流程深度解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Darren Yuen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
