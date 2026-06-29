@@ -194,7 +194,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2026-06-29 08:00:00 / 修改时间：17:24:10" itemprop="dateCreated datePublished" datetime="2026-06-29T08:00:00+08:00">2026-06-29</time>
+      <time title="创建时间：2026-06-29 08:00:00 / 修改时间：17:48:25" itemprop="dateCreated datePublished" datetime="2026-06-29T08:00:00+08:00">2026-06-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -336,10 +336,44 @@
 
 <hr>
 <h2 id="三、ICE-STUN-TURN"><a href="#三、ICE-STUN-TURN" class="headerlink" title="三、ICE &#x2F; STUN &#x2F; TURN"></a>三、ICE &#x2F; STUN &#x2F; TURN</h2><p><strong>核心问题</strong>：互联网上大多数设备在 NAT 后面（路由器后），没有公网 IP，两端怎么直连？</p>
-<h3 id="3-1-STUN——「你的公网地址是什么」"><a href="#3-1-STUN——「你的公网地址是什么」" class="headerlink" title="3.1 STUN——「你的公网地址是什么」"></a>3.1 STUN——「你的公网地址是什么」</h3><p><strong>比喻</strong>：你站在镜子前不知道自己长啥样，STUN 服务器就是那面镜子，照完告诉你「你的公网 IP 是 1.2.3.4:5678」。</p>
+<h3 id="3-1-STUN-和-TURN-的本质区别"><a href="#3-1-STUN-和-TURN-的本质区别" class="headerlink" title="3.1 STUN 和 TURN 的本质区别"></a>3.1 STUN 和 TURN 的本质区别</h3><p><strong>一句话区别</strong>：</p>
+<ul>
+<li><strong>STUN</strong>：照镜子，告诉你自己的公网地址是什么，不转发流量</li>
+<li><strong>TURN</strong>：快递柜，P2P 打不通时帮你中转所有流量</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>STUN</th>
+<th>TURN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>作用</td>
+<td>告诉你「你家门牌号是 xxx」</td>
+<td>帮你把信收下，再转交给朋友</td>
+</tr>
+<tr>
+<td>流量过服务器吗</td>
+<td>❌ 不过，只是查询</td>
+<td>✅ 所有流量都过</td>
+</tr>
+<tr>
+<td>费用</td>
+<td>极低（只有查询请求）</td>
+<td>高（要承载所有音视频流量）</td>
+</tr>
+<tr>
+<td>使用时机</td>
+<td>每次连接都用</td>
+<td>仅 P2P 打不通时兜底</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-STUN——「你的公网地址是什么」"><a href="#3-2-STUN——「你的公网地址是什么」" class="headerlink" title="3.2 STUN——「你的公网地址是什么」"></a>3.2 STUN——「你的公网地址是什么」</h3><p><strong>比喻</strong>：你站在镜子前不知道自己长啥样，STUN 服务器就是那面镜子，照完告诉你「你的公网 IP 是 1.2.3.4:5678」。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">你（192.168.1.100:12345）</span><br><span class="line">  ──→ STUN Server（公网）</span><br><span class="line">      ← 「你的公网地址是 1.2.3.4:5678」</span><br></pre></td></tr></table></figure>
 
-<h3 id="3-2-ICE——「尝试所有路径，找最优的一条」"><a href="#3-2-ICE——「尝试所有路径，找最优的一条」" class="headerlink" title="3.2 ICE——「尝试所有路径，找最优的一条」"></a>3.2 ICE——「尝试所有路径，找最优的一条」</h3><p>ICE 会枚举三类 Candidate（候选地址）：</p>
+<h3 id="3-3-ICE——「尝试所有路径，找最优的一条」"><a href="#3-3-ICE——「尝试所有路径，找最优的一条」" class="headerlink" title="3.3 ICE——「尝试所有路径，找最优的一条」"></a>3.3 ICE——「尝试所有路径，找最优的一条」</h3><p>ICE 会枚举三类 Candidate（候选地址），按优先级依次尝试：</p>
 <table>
 <thead>
 <tr>
@@ -364,9 +398,26 @@
 <td>最低（兜底）</td>
 </tr>
 </tbody></table>
-<p>ICE 会把这三类地址都发给对方，然后两端互相 ping，哪条通就用哪条。</p>
-<h3 id="3-3-TURN——「P2P-打不通时的中继」"><a href="#3-3-TURN——「P2P-打不通时的中继」" class="headerlink" title="3.3 TURN——「P2P 打不通时的中继」"></a>3.3 TURN——「P2P 打不通时的中继」</h3><p><strong>比喻</strong>：你给朋友快递，但他家门卫不让进（对称型 NAT），你只好把东西寄到快递柜，让他自己来取——TURN 服务器就是快递柜。</p>
-<p>代价：所有流量都过 TURN 服务器，带宽成本高，延迟也略增。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">① 先试 host candidate（局域网直连）→ 最快</span><br><span class="line">② 打不通 → 试 srflx candidate（STUN 拿到的公网地址，P2P 穿透）</span><br><span class="line">③ 还打不通 → 用 relay candidate（TURN 中继）→ 兜底，必通</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-TURN——「P2P-打不通时的中继」"><a href="#3-4-TURN——「P2P-打不通时的中继」" class="headerlink" title="3.4 TURN——「P2P 打不通时的中继」"></a>3.4 TURN——「P2P 打不通时的中继」</h3><p>走 TURN 就是走<strong>公网服务器代理所有媒体流</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">P2P 直连（host/srflx）：</span><br><span class="line">  手机A ──────────────────────────→ 手机B</span><br><span class="line">         直接传，不过任何服务器</span><br><span class="line"></span><br><span class="line">走 TURN：</span><br><span class="line">  手机A ──→ TURN服务器（公网）──→ 手机B</span><br><span class="line">         所有音视频都经过这里</span><br></pre></td></tr></table></figure>
+
+<p><strong>走 TURN 的影响：</strong></p>
+<ul>
+<li><strong>延迟增加</strong>：多绕一跳，增加 20-100ms（取决于 TURN 服务器离你多远）</li>
+<li><strong>带宽成本高</strong>：服务器要承载完整双向媒体流，1路 720p 约 1-2Mbps</li>
+<li><strong>内容仍然安全</strong>：媒体流是 SRTP 加密的，TURN 服务器只转发密文，看不到内容</li>
+</ul>
+<p><strong>生产环境策略：</strong></p>
+<ul>
+<li>能 P2P 直连的绝不走 TURN（省成本）</li>
+<li>TURN 服务器尽量部署在离用户近的地区（降延迟）</li>
+<li>监控 TURN 使用率，超过 30% 说明 P2P 打洞成功率偏低，需排查</li>
+</ul>
+<p><strong>它们不是路由器实现，代码里只需配置地址：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> iceServers = listOf(</span><br><span class="line">    <span class="comment">// STUN（Google 免费公共服务器）</span></span><br><span class="line">    PeerConnection.IceServer.builder(<span class="string">&quot;stun:stun.l.google.com:19302&quot;</span>).createIceServer(),</span><br><span class="line">    <span class="comment">// TURN（需要账号密码，一般自己部署）</span></span><br><span class="line">    PeerConnection.IceServer.builder(<span class="string">&quot;turn:your-turn-server.com:3478&quot;</span>)</span><br><span class="line">        .setUsername(<span class="string">&quot;user&quot;</span>)</span><br><span class="line">        .setPassword(<span class="string">&quot;password&quot;</span>)</span><br><span class="line">        .createIceServer()</span><br><span class="line">)</span><br><span class="line"><span class="keyword">val</span> config = PeerConnection.RTCConfiguration(iceServers)</span><br><span class="line"><span class="comment">// ICE 打洞、STUN 查询、TURN 中继全部自动处理，无需额外代码</span></span><br><span class="line"><span class="keyword">val</span> peerConnection = factory.createPeerConnection(config, observer)</span><br></pre></td></tr></table></figure>
+
 <hr>
 <h2 id="四、NAT-深挖"><a href="#四、NAT-深挖" class="headerlink" title="四、NAT 深挖"></a>四、NAT 深挖</h2><h3 id="4-1-NAT-是什么，为什么存在"><a href="#4-1-NAT-是什么，为什么存在" class="headerlink" title="4.1 NAT 是什么，为什么存在"></a>4.1 NAT 是什么，为什么存在</h3><p>IPv4 地址只有 43 亿个，全球设备远不止这个数。NAT 的本质是「地址复用」——一个公网 IP 后面可以藏几百台设备，路由器负责做地址映射。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">你的手机（192.168.1.100:12345）</span><br><span class="line">    ↓ 路由器做 NAT</span><br><span class="line">公网（1.2.3.4:54321）←── 外网只看到这个地址</span><br></pre></td></tr></table></figure>
@@ -390,7 +441,7 @@
 <p>关键在于<strong>「同时」</strong>——两端必须几乎同时发包，这就是为什么信令服务器要协调双方同步开始。</p>
 <h3 id="4-4-对称型-NAT-为什么打不通"><a href="#4-4-对称型-NAT-为什么打不通" class="headerlink" title="4.4 对称型 NAT 为什么打不通"></a>4.4 对称型 NAT 为什么打不通</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A 通过 STUN 拿到公网地址 1.2.3.4:5678（STUN 服务器看到的端口）</span><br><span class="line">A 向 B 发包 → NAT-A 分配新端口 1.2.3.4:5679（换了！）</span><br><span class="line">B 拿着 5678 去敲门，但 NAT-A 只认 5679 → 永远打不通</span><br></pre></td></tr></table></figure>
 
-<p>此时只能走 TURN 中继，代价是所有流量绕道服务器，延迟增加、带宽成本高。</p>
+<p>此时只能走 TURN 中继。现实中企业内网、运营商级 NAT（CGNAT）大量使用对称型 NAT，P2P 打洞成功率约 70-80%，剩下 20-30% 必须靠 TURN 兜底，所以生产环境不能省 TURN。</p>
 <hr>
 <h2 id="五、DTLS-SRTP"><a href="#五、DTLS-SRTP" class="headerlink" title="五、DTLS + SRTP"></a>五、DTLS + SRTP</h2><p><strong>一句话</strong>：WebRTC 的所有媒体流强制加密，不能关，不存在明文传输。</p>
 <h3 id="为什么需要两层？"><a href="#为什么需要两层？" class="headerlink" title="为什么需要两层？"></a>为什么需要两层？</h3><table>
