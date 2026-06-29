@@ -129,7 +129,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -138,7 +138,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -155,6 +155,348 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/webrtc-core-concepts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Darren Yuen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Darren Yuen">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/webrtc-core-concepts/" class="post-title-link" itemprop="url">WebRTC 核心概念详解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-06-29 08:00:00 / 修改时间：17:24:10" itemprop="dateCreated datePublished" datetime="2026-06-29T08:00:00+08:00">2026-06-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>本文系统梳理 WebRTC 的五大核心概念：信令、SDP、ICE&#x2F;STUN&#x2F;TURN、DTLS+SRTP、GCC 拥塞控制，并深入讲解 NAT 穿透原理和 GCC 算法细节。</p>
+</blockquote>
+<hr>
+<h2 id="缩写全称速查"><a href="#缩写全称速查" class="headerlink" title="缩写全称速查"></a>缩写全称速查</h2><table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>中文</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SDP</strong></td>
+<td>Session Description Protocol</td>
+<td>会话描述协议</td>
+</tr>
+<tr>
+<td><strong>ICE</strong></td>
+<td>Interactive Connectivity Establishment</td>
+<td>交互式连接建立</td>
+</tr>
+<tr>
+<td><strong>STUN</strong></td>
+<td>Session Traversal Utilities for NAT</td>
+<td>NAT 会话穿越工具</td>
+</tr>
+<tr>
+<td><strong>TURN</strong></td>
+<td>Traversal Using Relays around NAT</td>
+<td>通过中继穿越 NAT</td>
+</tr>
+<tr>
+<td><strong>DTLS</strong></td>
+<td>Datagram Transport Layer Security</td>
+<td>数据报传输层安全协议</td>
+</tr>
+<tr>
+<td><strong>SRTP</strong></td>
+<td>Secure Real-time Transport Protocol</td>
+<td>安全实时传输协议</td>
+</tr>
+<tr>
+<td><strong>RTP</strong></td>
+<td>Real-time Transport Protocol</td>
+<td>实时传输协议</td>
+</tr>
+<tr>
+<td><strong>RTCP</strong></td>
+<td>RTP Control Protocol</td>
+<td>RTP 控制协议</td>
+</tr>
+<tr>
+<td><strong>GCC</strong></td>
+<td>Google Congestion Control</td>
+<td>谷歌拥塞控制算法</td>
+</tr>
+<tr>
+<td><strong>NAT</strong></td>
+<td>Network Address Translation</td>
+<td>网络地址转换</td>
+</tr>
+<tr>
+<td><strong>TLS</strong></td>
+<td>Transport Layer Security</td>
+<td>传输层安全协议</td>
+</tr>
+<tr>
+<td><strong>UDP</strong></td>
+<td>User Datagram Protocol</td>
+<td>用户数据报协议</td>
+</tr>
+<tr>
+<td><strong>TCP</strong></td>
+<td>Transmission Control Protocol</td>
+<td>传输控制协议</td>
+</tr>
+<tr>
+<td><strong>NACK</strong></td>
+<td>Negative Acknowledgement</td>
+<td>否定确认（丢包重传请求）</td>
+</tr>
+<tr>
+<td><strong>FEC</strong></td>
+<td>Forward Error Correction</td>
+<td>前向纠错</td>
+</tr>
+<tr>
+<td><strong>REMB</strong></td>
+<td>Receiver Estimated Maximum Bitrate</td>
+<td>接收端估计最大码率</td>
+</tr>
+<tr>
+<td><strong>BWE</strong></td>
+<td>Bandwidth Estimation</td>
+<td>带宽估计</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="一、信令（Signaling）"><a href="#一、信令（Signaling）" class="headerlink" title="一、信令（Signaling）"></a>一、信令（Signaling）</h2><p><strong>一句话</strong>：WebRTC 两端想通话，但双方都不知道对方在哪、能用什么格式——信令就是用来交换这些「元信息」的通道。</p>
+<p><strong>比喻</strong>：你要和朋友打电话，但没有存他号码。你们先互发微信消息「我的号码是 xxx，你的是多少？」——这个过程就是信令。</p>
+<p><strong>关键点</strong>：</p>
+<ul>
+<li>WebRTC <strong>不规定</strong>信令用什么协议，随便你用 WebSocket、HTTP、甚至短信</li>
+<li>信令只传两类内容：<strong>SDP</strong>（我能做什么）和 <strong>ICE Candidate</strong>（我在哪）</li>
+<li>信令服务器本身不碰媒体流，只是个「中间人」转发消息</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A ──── Offer SDP ────→ 信令服务器 ──→ B</span><br><span class="line">A ←─── Answer SDP ─── 信令服务器 ←── B</span><br><span class="line">A ──── ICE Candidate → 信令服务器 ──→ B</span><br><span class="line">A ←─── ICE Candidate ─ 信令服务器 ←── B</span><br><span class="line">// 信令结束后，A 和 B 直连，信令服务器退出历史舞台</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、SDP（Session-Description-Protocol）"><a href="#二、SDP（Session-Description-Protocol）" class="headerlink" title="二、SDP（Session Description Protocol）"></a>二、SDP（Session Description Protocol）</h2><p><strong>一句话</strong>：我把自己的「能力清单」写给你看——我支持哪些编解码器、用什么分辨率、监听哪个端口。</p>
+<p><strong>比喻</strong>：相亲前双方交换简历，写清楚「我身高 180、会做饭、有房」，对方看完说「OK 我接受，我的情况是 xxx」。</p>
+<p><strong>真实的 SDP 长这样（截取片段）：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">v=0</span><br><span class="line">o=- 1234567890 2 IN IP4 127.0.0.1</span><br><span class="line">s=-</span><br><span class="line">t=0 0</span><br><span class="line">a=group:BUNDLE 0 1</span><br><span class="line">m=audio 9 UDP/TLS/RTP/SAVPF 111 103 104</span><br><span class="line">a=rtpmap:111 opus/48000/2       ← 支持 Opus 编码，48kHz，双声道</span><br><span class="line">a=rtpmap:103 ISAC/16000</span><br><span class="line">m=video 9 UDP/TLS/RTP/SAVPF 96 97</span><br><span class="line">a=rtpmap:96 VP8/90000           ← 支持 VP8 视频编码</span><br><span class="line">a=rtpmap:97 H264/90000          ← 也支持 H264</span><br><span class="line">a=fmtp:97 profile-level-id=42e01f  ← H264 具体 Profile</span><br></pre></td></tr></table></figure>
+
+<p><strong>Offer &#x2F; Answer 模型</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A 发 Offer：「我支持 VP8 和 H264，你选一个」</span><br><span class="line">B 回 Answer：「好，我们用 H264」</span><br><span class="line">// 之后双方都只用 H264 通信</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、ICE-STUN-TURN"><a href="#三、ICE-STUN-TURN" class="headerlink" title="三、ICE &#x2F; STUN &#x2F; TURN"></a>三、ICE &#x2F; STUN &#x2F; TURN</h2><p><strong>核心问题</strong>：互联网上大多数设备在 NAT 后面（路由器后），没有公网 IP，两端怎么直连？</p>
+<h3 id="3-1-STUN——「你的公网地址是什么」"><a href="#3-1-STUN——「你的公网地址是什么」" class="headerlink" title="3.1 STUN——「你的公网地址是什么」"></a>3.1 STUN——「你的公网地址是什么」</h3><p><strong>比喻</strong>：你站在镜子前不知道自己长啥样，STUN 服务器就是那面镜子，照完告诉你「你的公网 IP 是 1.2.3.4:5678」。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">你（192.168.1.100:12345）</span><br><span class="line">  ──→ STUN Server（公网）</span><br><span class="line">      ← 「你的公网地址是 1.2.3.4:5678」</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-ICE——「尝试所有路径，找最优的一条」"><a href="#3-2-ICE——「尝试所有路径，找最优的一条」" class="headerlink" title="3.2 ICE——「尝试所有路径，找最优的一条」"></a>3.2 ICE——「尝试所有路径，找最优的一条」</h3><p>ICE 会枚举三类 Candidate（候选地址）：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>是什么</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>host</strong></td>
+<td>本机局域网 IP</td>
+<td>最高（同局域网直连）</td>
+</tr>
+<tr>
+<td><strong>srflx</strong></td>
+<td>通过 STUN 拿到的公网 IP</td>
+<td>中（NAT 穿透）</td>
+</tr>
+<tr>
+<td><strong>relay</strong></td>
+<td>TURN 服务器中继地址</td>
+<td>最低（兜底）</td>
+</tr>
+</tbody></table>
+<p>ICE 会把这三类地址都发给对方，然后两端互相 ping，哪条通就用哪条。</p>
+<h3 id="3-3-TURN——「P2P-打不通时的中继」"><a href="#3-3-TURN——「P2P-打不通时的中继」" class="headerlink" title="3.3 TURN——「P2P 打不通时的中继」"></a>3.3 TURN——「P2P 打不通时的中继」</h3><p><strong>比喻</strong>：你给朋友快递，但他家门卫不让进（对称型 NAT），你只好把东西寄到快递柜，让他自己来取——TURN 服务器就是快递柜。</p>
+<p>代价：所有流量都过 TURN 服务器，带宽成本高，延迟也略增。</p>
+<hr>
+<h2 id="四、NAT-深挖"><a href="#四、NAT-深挖" class="headerlink" title="四、NAT 深挖"></a>四、NAT 深挖</h2><h3 id="4-1-NAT-是什么，为什么存在"><a href="#4-1-NAT-是什么，为什么存在" class="headerlink" title="4.1 NAT 是什么，为什么存在"></a>4.1 NAT 是什么，为什么存在</h3><p>IPv4 地址只有 43 亿个，全球设备远不止这个数。NAT 的本质是「地址复用」——一个公网 IP 后面可以藏几百台设备，路由器负责做地址映射。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">你的手机（192.168.1.100:12345）</span><br><span class="line">    ↓ 路由器做 NAT</span><br><span class="line">公网（1.2.3.4:54321）←── 外网只看到这个地址</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-NAT-的四种类型（从容易到难穿透排序）"><a href="#4-2-NAT-的四种类型（从容易到难穿透排序）" class="headerlink" title="4.2 NAT 的四种类型（从容易到难穿透排序）"></a>4.2 NAT 的四种类型（从容易到难穿透排序）</h3><p><strong>① 完全锥型 NAT（Full Cone NAT）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">规则：只要内网 A 发过包，任何人都能从 1.2.3.4:54321 发包进来找到 A</span><br><span class="line">穿透难度：★☆☆☆  最容易</span><br></pre></td></tr></table></figure>
+
+<p><strong>② 地址限制锥型 NAT（Address Restricted Cone）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">规则：只有 A 主动发过包的目标 IP，才能回包进来（端口不限）</span><br><span class="line">穿透难度：★★☆☆</span><br></pre></td></tr></table></figure>
+
+<p><strong>③ 端口限制锥型 NAT（Port Restricted Cone）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">规则：只有 A 主动发过包的目标 IP + Port，才能回包进来</span><br><span class="line">穿透难度：★★★☆</span><br></pre></td></tr></table></figure>
+
+<p><strong>④ 对称型 NAT（Symmetric NAT）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">规则：每次发往不同目标，路由器分配不同的公网端口</span><br><span class="line">  发给 B → 公网端口 54321</span><br><span class="line">  发给 C → 公网端口 54322（换了！）</span><br><span class="line">穿透难度：★★★★  最难</span><br></pre></td></tr></table></figure>
+
+<p>对称型 NAT 是 P2P 打洞最大的敌人——你通过 STUN 拿到的公网端口，只对 STUN 服务器有效，发给对端时路由器又换了个新端口，对端根本找不到你。</p>
+<h3 id="4-3-P2P-打洞原理（以端口限制锥型为例）"><a href="#4-3-P2P-打洞原理（以端口限制锥型为例）" class="headerlink" title="4.3 P2P 打洞原理（以端口限制锥型为例）"></a>4.3 P2P 打洞原理（以端口限制锥型为例）</h3><p>两端同时向对方「假装」发包，让路由器在 NAT 表里留下记录，之后对方的包就能进来了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">A（192.168.1.100）  NAT-A（1.2.3.4）    NAT-B（5.6.7.8）  B（192.168.1.200）</span><br><span class="line"></span><br><span class="line">① A 和 B 都把自己的 srflx Candidate 通过信令发给对方</span><br><span class="line">   A 知道：B 的公网地址是 5.6.7.8:9012</span><br><span class="line">   B 知道：A 的公网地址是 1.2.3.4:5678</span><br><span class="line"></span><br><span class="line">② A 向 5.6.7.8:9012 发 STUN Binding Request</span><br><span class="line">   → NAT-A 记录：内网 192.168.1.100:X ↔ 公网 1.2.3.4:5678（允许 5.6.7.8 回包）</span><br><span class="line">   → 包到达 NAT-B，但 NAT-B 还没有 A 的记录，丢弃</span><br><span class="line"></span><br><span class="line">③ B 同时向 1.2.3.4:5678 发 STUN Binding Request</span><br><span class="line">   → NAT-B 记录：内网 192.168.1.200:Y ↔ 公网 5.6.7.8:9012（允许 1.2.3.4 回包）</span><br><span class="line">   → 包到达 NAT-A，此时 NAT-A 已有记录，放行！A 收到了</span><br><span class="line"></span><br><span class="line">④ A 回复 B，B 的 NAT 也放行</span><br><span class="line">   ✅ 洞打通，双方直连</span><br></pre></td></tr></table></figure>
+
+<p>关键在于<strong>「同时」</strong>——两端必须几乎同时发包，这就是为什么信令服务器要协调双方同步开始。</p>
+<h3 id="4-4-对称型-NAT-为什么打不通"><a href="#4-4-对称型-NAT-为什么打不通" class="headerlink" title="4.4 对称型 NAT 为什么打不通"></a>4.4 对称型 NAT 为什么打不通</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A 通过 STUN 拿到公网地址 1.2.3.4:5678（STUN 服务器看到的端口）</span><br><span class="line">A 向 B 发包 → NAT-A 分配新端口 1.2.3.4:5679（换了！）</span><br><span class="line">B 拿着 5678 去敲门，但 NAT-A 只认 5679 → 永远打不通</span><br></pre></td></tr></table></figure>
+
+<p>此时只能走 TURN 中继，代价是所有流量绕道服务器，延迟增加、带宽成本高。</p>
+<hr>
+<h2 id="五、DTLS-SRTP"><a href="#五、DTLS-SRTP" class="headerlink" title="五、DTLS + SRTP"></a>五、DTLS + SRTP</h2><p><strong>一句话</strong>：WebRTC 的所有媒体流强制加密，不能关，不存在明文传输。</p>
+<h3 id="为什么需要两层？"><a href="#为什么需要两层？" class="headerlink" title="为什么需要两层？"></a>为什么需要两层？</h3><table>
+<thead>
+<tr>
+<th>层</th>
+<th>协议</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>密钥交换</td>
+<td><strong>DTLS</strong></td>
+<td>基于 UDP 的 TLS，握手阶段交换加密密钥</td>
+</tr>
+<tr>
+<td>媒体加密</td>
+<td><strong>SRTP</strong></td>
+<td>用 DTLS 协商出来的密钥，加密每一帧音视频</td>
+</tr>
+</tbody></table>
+<p><strong>比喻</strong>：</p>
+<ul>
+<li>DTLS &#x3D; 见面时互换暗语（密钥）</li>
+<li>SRTP &#x3D; 之后说话都用暗语加密</li>
+</ul>
+<p><strong>流程</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. ICE 建立 UDP 连接</span><br><span class="line">2. DTLS 握手（交换证书 + 密钥）</span><br><span class="line">3. 之后所有 RTP 包用协商好的密钥加密 → SRTP</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么用 DTLS 不用 TLS？</strong></p>
+<p>因为 RTP 跑在 UDP 上，UDP 没有 TCP 的可靠传输，TLS 依赖 TCP，所以需要能在 UDP 上工作的 DTLS。</p>
+<hr>
+<h2 id="六、GCC-拥塞控制深挖"><a href="#六、GCC-拥塞控制深挖" class="headerlink" title="六、GCC 拥塞控制深挖"></a>六、GCC 拥塞控制深挖</h2><p>GCC 本质是两个并行的带宽估计器，结果取最小值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">              ┌── 基于延迟的估计器（Trendline Filter）──┐</span><br><span class="line">输入：网络包  →                                          → min() → 目标码率</span><br><span class="line">              └── 基于丢包的估计器（Loss-based）─────────┘</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-1-估计器一：基于延迟梯度（Trendline-Filter）"><a href="#6-1-估计器一：基于延迟梯度（Trendline-Filter）" class="headerlink" title="6.1 估计器一：基于延迟梯度（Trendline Filter）"></a>6.1 估计器一：基于延迟梯度（Trendline Filter）</h3><p><strong>核心思想</strong>：网络队列开始积压时，包的到达间隔会变长，比丢包更早暴露拥塞。</p>
+<p><strong>第一步：计算每个包组的延迟梯度</strong></p>
+<p>WebRTC 把包分组（每组若干个包），测量「发送间隔」和「到达间隔」的差值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">发送端：包组1在 t=0 发出，包组2在 t=20ms 发出  → 发送间隔 20ms</span><br><span class="line">接收端：包组1在 t=50ms 到达，包组2在 t=75ms 到达 → 到达间隔 25ms</span><br><span class="line"></span><br><span class="line">延迟梯度 δ = 到达间隔 - 发送间隔 = 25 - 20 = +5ms</span><br></pre></td></tr></table></figure>
+
+<p>δ &gt; 0 说明队列在积压（拥塞信号）；δ &lt; 0 说明队列在消散（网络变好）。</p>
+<p><strong>第二步：Trendline 滤波，过滤抖动噪声</strong></p>
+<p>单个包的 δ 抖动很大（网络天然不稳定），用线性回归拟合最近 N 个 δ 的趋势线：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">δ序列：+2, -1, +3, +4, +5, +6  → 趋势向上 → 拥塞信号</span><br><span class="line">δ序列：+2, -1, +3, -2, +1, -1  → 趋势平稳 → 正常</span><br></pre></td></tr></table></figure>
+
+<p><strong>第三步：状态机判断</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NORMAL   ──(trend持续上升)──→  OVERUSE（拥塞）</span><br><span class="line">OVERUSE  ──(trend下降)──────→  UNDERUSE（空闲）</span><br><span class="line">UNDERUSE ──(trend平稳)──────→  NORMAL</span><br></pre></td></tr></table></figure>
+
+<p>只有连续多个包组都显示 OVERUSE，才触发降码率（避免误判）。</p>
+<p><strong>第四步：AIMD 调整码率</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">UNDERUSE → 加性增加（Additive Increase）：每秒增加 8% 码率</span><br><span class="line">OVERUSE  → 乘性减少（Multiplicative Decrease）：乘以 0.85，立刻降 15%</span><br><span class="line">NORMAL   → 保持</span><br></pre></td></tr></table></figure>
+
+<p>为什么「加慢减快」：降码率是应急响应，必须快；加码率如果太猛会重新触发拥塞，所以慢慢探测上限在哪。</p>
+<h3 id="6-2-估计器二：基于丢包率（Loss-based）"><a href="#6-2-估计器二：基于丢包率（Loss-based）" class="headerlink" title="6.2 估计器二：基于丢包率（Loss-based）"></a>6.2 估计器二：基于丢包率（Loss-based）</h3><p>接收端通过 RTCP 报告丢包情况（每秒一次），发送端根据丢包率调整：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">丢包率 &lt; 2%   → 可以提升码率（乘以 1.08）</span><br><span class="line">丢包率 2~10%  → 保持当前码率</span><br><span class="line">丢包率 &gt; 10%  → 降码率（乘以 1 - 0.5 × 丢包率）</span><br><span class="line">              比如丢包 20% → 乘以 0.9 → 降 10%</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-两个估计器为什么都需要"><a href="#6-3-两个估计器为什么都需要" class="headerlink" title="6.3 两个估计器为什么都需要"></a>6.3 两个估计器为什么都需要</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>延迟梯度</th>
+<th>丢包率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>响应速度</td>
+<td>快（队列刚积压就感知到）</td>
+<td>慢（必须等到包真的丢了）</td>
+</tr>
+<tr>
+<td>准确性</td>
+<td>受网络抖动影响，有误判</td>
+<td>准确，丢了就是丢了</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>提前预防拥塞</td>
+<td>确认拥塞已发生</td>
+</tr>
+</tbody></table>
+<p>取两者最小值 &#x3D; 保守策略，哪个说要降就降，不冒险。</p>
+<h3 id="6-4-完整-GCC-工作闭环"><a href="#6-4-完整-GCC-工作闭环" class="headerlink" title="6.4 完整 GCC 工作闭环"></a>6.4 完整 GCC 工作闭环</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">发送端                              接收端</span><br><span class="line">  │                                    │</span><br><span class="line">  │── 发 RTP 包（带时间戳）──────────→  │</span><br><span class="line">  │                                    │ 计算到达间隔，算 δ</span><br><span class="line">  │                                    │ 统计丢包率</span><br><span class="line">  │  ←── RTCP Transport-CC Feedback ── │  （每包都反馈到达时间）</span><br><span class="line">  │  ←── RTCP REMB（估计最大码率）───── │  （旧版，逐渐被 Transport-CC 替代）</span><br><span class="line">  │                                    │</span><br><span class="line">  │ 发送端本地运行 Trendline Filter</span><br><span class="line">  │ 计算目标码率 → 通知编码器调整码率</span><br><span class="line">  │ → 编码器输出更小/更大的帧</span><br></pre></td></tr></table></figure>
+
+<p>现代 WebRTC 主要用 <strong>Transport-CC</strong>（接收端把每个包的到达时间戳都反馈给发送端，发送端自己算延迟梯度），比老的 REMB 更精准。</p>
+<hr>
+<h2 id="七、串起来看整个流程"><a href="#七、串起来看整个流程" class="headerlink" title="七、串起来看整个流程"></a>七、串起来看整个流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. A 和 B 各自通过 STUN 拿到自己的公网地址</span><br><span class="line">2. A 创建 Offer SDP（我支持 VP8/H264/Opus）发给信令服务器 → 转给 B</span><br><span class="line">3. B 创建 Answer SDP（我选 H264）发回给 A</span><br><span class="line">4. 双方交换 ICE Candidate，开始打洞</span><br><span class="line">5. ICE 找到最优路径（优先直连，打不通走 TURN）</span><br><span class="line">6. DTLS 握手，协商加密密钥</span><br><span class="line">7. 开始传 SRTP 加密的音视频流</span><br><span class="line">8. GCC 持续监测网络，动态调整发送码率</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><em>最后更新：2026-06</em></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1657,90 +1999,6 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2025/01/19/Kotlin/2025-01-19-%E5%8D%8F%E7%A8%8B%E5%8E%9F%E7%90%86%E4%B9%8B%E7%BA%BF%E7%A8%8B%E5%88%87%E6%8D%A2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Darren Yuen">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Darren Yuen">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | Darren Yuen">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/01/19/Kotlin/2025-01-19-%E5%8D%8F%E7%A8%8B%E5%8E%9F%E7%90%86%E4%B9%8B%E7%BA%BF%E7%A8%8B%E5%88%87%E6%8D%A2/" class="post-title-link" itemprop="url">协程原理之线程切换</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-01-19 00:00:00" itemprop="dateCreated datePublished" datetime="2025-01-19T00:00:00+08:00">2025-01-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-30 09:48:30" itemprop="dateModified" datetime="2026-05-30T09:48:30+08:00">2026-05-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2025/01/19/Kotlin/2025-01-19-%E5%8D%8F%E7%A8%8B%E5%8E%9F%E7%90%86%E4%B9%8B%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%8F%E6%8C%82%E8%B5%B7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1833,7 +2091,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2025/01/11/Kotlin/2025-01-11-suspendCoroutine%E5%92%8CsuspendCancellableCoroutine%E4%BD%BF%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="https://darrenyuen.github.io/2025/01/19/Kotlin/2025-01-19-%E5%8D%8F%E7%A8%8B%E5%8E%9F%E7%90%86%E4%B9%8B%E7%BA%BF%E7%A8%8B%E5%88%87%E6%8D%A2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1851,7 +2109,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/01/11/Kotlin/2025-01-11-suspendCoroutine%E5%92%8CsuspendCancellableCoroutine%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">suspendCoroutine和suspendCancellableCoroutine使用</a>
+          <a href="/2025/01/19/Kotlin/2025-01-19-%E5%8D%8F%E7%A8%8B%E5%8E%9F%E7%90%86%E4%B9%8B%E7%BA%BF%E7%A8%8B%E5%88%87%E6%8D%A2/" class="post-title-link" itemprop="url">协程原理之线程切换</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1862,7 +2120,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2025-01-11 00:00:00" itemprop="dateCreated datePublished" datetime="2025-01-11T00:00:00+08:00">2025-01-11</time>
+      <time title="创建时间：2025-01-19 00:00:00" itemprop="dateCreated datePublished" datetime="2025-01-19T00:00:00+08:00">2025-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1891,36 +2149,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h3 id="1-suspendCoroutine作用及用法"><a href="#1-suspendCoroutine作用及用法" class="headerlink" title="1. suspendCoroutine作用及用法"></a>1. suspendCoroutine作用及用法</h3><p><code>suspendCoroutine</code> 是 Kotlin 中用于挂起协程并与外部世界进行交互的函数之一。它的主要作用是允许你在协程中将异步非挂起的操作转化为挂起操作，从而可以方便地与协程上下文集成。具体来说，<code>suspendCoroutine</code> 的主要作用包括以下几点：</p>
-<ol>
-<li><p>将回调式的异步操作转化为挂起操作：当你需要在协程中执行某些异步操作，例如调用回调函数，处理回调式 API，或等待某个事件发生时，<code>suspendCoroutine</code> 允许你将这些异步操作封装为挂起操作，使得你可以像调用普通的挂起函数一样调用它们，从而简化了异步编程的代码。</p>
-</li>
-<li><p>挂起当前协程：<code>suspendCoroutine</code> 在执行时会挂起当前协程，这意味着协程的执行会暂停，直到回调操作完成。这有助于防止阻塞线程，并允许其他协程在执行。</p>
-</li>
-<li><p>传递回调函数：<code>suspendCoroutine</code> 接受一个 Lambda 表达式，该 Lambda 表达式需要传递一个函数参数，通常是一个回调函数，该回调函数将在异步操作完成时被调用。在 Lambda 表达式内部，你可以使用 <code>resume</code> 来恢复协程的执行并传递结果，或者使用 <code>resumeWithException</code> 来传递异常，以便协程可以处理结果或错误。</p>
-</li>
-</ol>
-<h3 id="suspendCoroutine案例"><a href="#suspendCoroutine案例" class="headerlink" title="suspendCoroutine案例"></a>suspendCoroutine案例</h3><p>| </p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;  	withContext(Dispatchers.IO) &#123;  		<span class="keyword">val</span> result = async &#123; getResult() &#125;.await()  		println(<span class="string">&quot;result=<span class="variable">$result</span>&quot;</span>)  	&#125;  &#125;    <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">getResult</span><span class="params">()</span></span> = suspendCoroutine&lt;<span class="built_in">Boolean</span>&gt; &#123;  	<span class="keyword">val</span> callback = <span class="keyword">object</span> : Callback &#123;  		<span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">()</span></span> &#123;  			it.resume(<span class="literal">true</span>)  		&#125;  	  		<span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onFail</span><span class="params">()</span></span> &#123;  			it.resumeWithException(Exception(<span class="string">&quot;fail&quot;</span>))  		&#125;  	  		<span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCancel</span><span class="params">()</span></span> &#123;  			it.resume(<span class="literal">false</span>)  		&#125;  	&#125;  	handleCallback(callback)  &#125;    <span class="function"><span class="keyword">fun</span> <span class="title">handleCallback</span><span class="params">(callback: <span class="type">Callback</span>)</span></span> &#123;  	callback.onFail()  &#125;    <span class="keyword">interface</span> <span class="title class_">Callback</span> &#123;  	<span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">()</span></span>  	<span class="function"><span class="keyword">fun</span> <span class="title">onFail</span><span class="params">()</span></span>  	<span class="function"><span class="keyword">fun</span> <span class="title">onCancel</span><span class="params">()</span></span>  &#125;</span><br></pre></td></tr></table></figure>
-
-<p> |</p>
-<h3 id="suspendCancellableCoroutine作用和用法"><a href="#suspendCancellableCoroutine作用和用法" class="headerlink" title="suspendCancellableCoroutine作用和用法"></a>suspendCancellableCoroutine作用和用法</h3><p><code>suspendCancellableCoroutine</code> 是 Kotlin 中的一个函数，它允许你在一个协程中创建一个可取消的挂起操作，通常用于实现自定义的挂起函数或处理异步操作。基本功能和<code>suspendCoroutine</code>一样，只是多了一个支持监听外部协程取消和取消内部协程执行的能力。</p>
-<h3 id="suspendCancellableCoroutine案例"><a href="#suspendCancellableCoroutine案例" class="headerlink" title="suspendCancellableCoroutine案例"></a>suspendCancellableCoroutine案例</h3><p>| </p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义的可取消挂起函数  suspend fun customCancelableOperation(): String &#123;  	return suspendCancellableCoroutine &#123; continuation -&gt;  		val job = GlobalScope.launch &#123;  			try &#123;  				// 模拟异步操作  				delay(1000)  				// 如果操作成功，恢复挂起操作并传递结果  				continuation.resume(&quot;Operation completed successfully&quot;)  			&#125; catch (e: CancellationException) &#123;  				// 如果操作被取消，处理取消操作  				continuation.resumeWithException(e)  			&#125; catch (e: Exception) &#123;  				// 如果操作失败，传递异常  				continuation.resumeWithException(e)  			&#125;  		&#125;  		  		// 当外部协程取消时，取消内部协程  		continuation.invokeOnCancellation &#123;  		job.cancel()  		&#125;  	&#125;  &#125;    fun main() = runBlocking &#123;  	val job = launch &#123;  		val result = customCancelableOperation()  		println(result)  	&#125;  	  	delay(500) // 等待一段时间  	job.cancel() // 取消外部协程  	job.join()  &#125;</span></span><br></pre></td></tr></table></figure>
-
-<p> |</p>
-<h3 id="处理resumeWithException的通用方案"><a href="#处理resumeWithException的通用方案" class="headerlink" title="处理resumeWithException的通用方案"></a>处理resumeWithException的通用方案</h3><p>除了通过try catch的方式来捕获异常，也可以在launch协程的context中添加exceptionHandler来统一处理异常。 例如：</p>
-<p>| </p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;  	<span class="keyword">val</span> exceptionHandler = CoroutineExceptionHandler &#123; _, exception -&gt;  		println(<span class="string">&quot;Caught exception: <span class="variable">$exception</span>&quot;</span>)  	&#125;  	  	<span class="keyword">val</span> job = GlobalScope.launch(exceptionHandler) &#123;  		println(<span class="keyword">data</span>)  	&#125;  	  	job.join()  &#125;</span><br></pre></td></tr></table></figure>
-
-<p> |</p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>在日常开发中，在协程上下文将异步非挂起的操作转化为挂起操作时遇到过多次回调完成的情况，导致一个continuation被多次resume，从而出现异常<code>java.lang.IllegalStateException: Already resumed...</code></p>
-<p>这时，可以通过使用suspendCancellableCoroutine并通过判断其状态决定是否需要真正resume来避免重复多次resume。</p>
-<p>| </p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> Continuation<span class="type">&lt;T&gt;</span>.<span class="title">safeResume</span><span class="params">(value: <span class="type">T</span>)</span></span> &#123;  	<span class="keyword">if</span> (<span class="keyword">this</span> <span class="keyword">is</span> CancellableContinuation) &#123;  		<span class="keyword">if</span> (isActive) &#123;  			resume(value)  		&#125; <span class="keyword">else</span> &#123;  			CapaLog.d(<span class="string">&quot;Continuation&quot;</span>, <span class="string">&quot;continuation is not active&quot;</span>)  		&#125;  	&#125; <span class="keyword">else</span> <span class="keyword">throw</span> Exception(<span class="string">&quot;Must use suspendCancellableCoroutine instead of suspendCoroutine&quot;</span>)  &#125;</span><br></pre></td></tr></table></figure>
-
-<p> |</p>
-
+          
       
     </div>
 
